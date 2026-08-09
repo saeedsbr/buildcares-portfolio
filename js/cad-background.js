@@ -136,7 +136,7 @@ window.CADBackground = {
       opacity = 0.03 + (1 - dist / 200) * 0.12;
     }
     
-    this.ctx.strokeStyle = `rgba(0, 229, 255, ${opacity})`;
+    this.ctx.strokeStyle = `rgba(2, 132, 199, ${opacity * 0.8})`;
     this.ctx.beginPath();
     this.ctx.moveTo(x1, y1);
     this.ctx.lineTo(x2, y2);
@@ -145,7 +145,7 @@ window.CADBackground = {
   
   drawTrackingLines: function() {
     this.ctx.lineWidth = 0.5;
-    this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+    this.ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
     
     this.ctx.beginPath();
     // Horizontal line
@@ -170,9 +170,9 @@ window.CADBackground = {
       const dy = this.mouse.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       
-      let opacity = 0.1;
+      let opacity = 0.15;
       if (dist < 150) {
-        opacity = 0.1 + (1 - dist / 150) * 0.7;
+        opacity = 0.15 + (1 - dist / 150) * 0.75;
         
         // Update value slightly when active to simulate live tracking
         if (Math.random() > 0.95) {
@@ -181,13 +181,13 @@ window.CADBackground = {
       }
       
       // Draw point
-      this.ctx.fillStyle = `rgba(0, 229, 255, ${opacity})`;
+      this.ctx.fillStyle = `rgba(2, 132, 199, ${opacity})`;
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
       this.ctx.fill();
       
       // Draw crosshair
-      this.ctx.strokeStyle = `rgba(0, 229, 255, ${opacity * 0.5})`;
+      this.ctx.strokeStyle = `rgba(2, 132, 199, ${opacity * 0.5})`;
       this.ctx.lineWidth = 0.5;
       this.ctx.beginPath();
       this.ctx.moveTo(p.x - 5, p.y);
@@ -197,7 +197,7 @@ window.CADBackground = {
       this.ctx.stroke();
       
       // Draw text
-      this.ctx.fillStyle = `rgba(232, 234, 237, ${opacity})`;
+      this.ctx.fillStyle = `rgba(15, 23, 42, ${opacity})`;
       this.ctx.fillText(`+ ${p.value}${p.unit}`, p.x + 8, p.y);
     }
   },

@@ -1,21 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Colors */
-  --bg-primary: #0a0e17;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1a1f2e;
-  --bg-card: #0d1321;
-  --accent-cyan: #00e5ff;
-  --accent-blue: #2979ff;
-  --accent-cyan-dim: rgba(0, 229, 255, 0.15);
-  --accent-blue-dim: rgba(41, 121, 255, 0.1);
-  --text-primary: #e8eaed;
-  --text-secondary: #8b95a5;
-  --text-dim: #4a5568;
-  --line-color: rgba(0, 229, 255, 0.12);
-  --line-bright: rgba(0, 229, 255, 0.4);
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  /* Colors — Architectural Light CAD Theme */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --accent-cyan: #0284c7;
+  --accent-blue: #2563eb;
+  --accent-cyan-dim: rgba(2, 132, 199, 0.12);
+  --accent-blue-dim: rgba(37, 99, 235, 0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-dim: #64748b;
+  --line-color: rgba(2, 132, 199, 0.14);
+  --line-bright: rgba(2, 132, 199, 0.45);
+  --border-subtle: rgba(15, 23, 42, 0.12);
 
   /* Fonts */
   --font-heading: 'Space Grotesk', sans-serif;
@@ -226,17 +226,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Cards & Panels */
 .glass-card {
-  background: rgba(13, 19, 33, 0.7);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-subtle);
   transition: all 0.4s ease;
   border-radius: 0; /* CAD feel */
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
 }
 
 .glass-card:hover {
-  border-color: var(--accent-cyan-dim);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.05);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 8px 30px rgba(2, 132, 199, 0.12);
 }
 
 .cad-border {
@@ -267,7 +268,7 @@ button, a {
   align-items: center;
   justify-content: center;
   background-color: var(--accent-cyan);
-  color: #0a0e17;
+  color: #ffffff;
   font-family: var(--font-heading);
   font-weight: 600;
   padding: 0.875rem 2rem;
@@ -354,11 +355,12 @@ button, a {
 }
 
 .navbar.scrolled {
-  background: rgba(10, 14, 23, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
   padding: 1rem 0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
 }
 
 .nav-link {
@@ -1066,10 +1068,10 @@ button, a {
 
 .isometric-building {
   --building-h: 0px;        /* animated from 0 → 130px by GSAP scroll  */
-  --wall-col:   rgba(8, 18, 34, 0.60);
-  --edge-col:   rgba(0, 229, 255, 0.55);
-  --inner-col:  rgba(0, 229, 255, 0.22);
-  --inner-edge: rgba(0, 229, 255, 0.80);
+  --wall-col:   rgba(255, 255, 255, 0.88);
+  --edge-col:   #0284c7;
+  --inner-col:  rgba(2, 132, 199, 0.14);
+  --inner-edge: #0284c7;
   width:  280px;
   height: 220px;
   position: relative;
@@ -1092,11 +1094,11 @@ button, a {
 .iso-floor {
   width:  280px;
   height: 220px;
-  background: rgba(0, 229, 255, 0.08);
-  border: 2px solid rgba(0, 229, 255, 0.45);
+  background: rgba(2, 132, 199, 0.08);
+  border: 2px solid #0284c7;
+  box-shadow: inset 0 0 20px rgba(2, 132, 199, 0.12);
   left: 0; top: 0;
-  /* L-shaped clip: main 280×220 minus garage cutout is already separate */
-}
+}  /* L-shaped clip: main 280×220 minus garage cutout is already separate */
 
 /* ── OUTER WALLS — Main House ── */
 .iso-wall {
