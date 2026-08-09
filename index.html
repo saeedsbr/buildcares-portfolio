@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuildCares — Architectural Design & CAD Services — Thoughtful Design, Lasting Care</title>
+    <meta name="description" content="BuildCares is a freelance architectural design and CAD subcontractor specialising in planning drawings, loft conversions, extensions, garage conversions, and new builds for UK clients.">
+    <link rel="icon" type="image/jpeg" href="https://buildcares.subthings.com/images/logo.jpeg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css?v=15">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+</head>
+<body>
+
+    <!-- ==================== CUSTOM CURSOR ==================== -->
+    <div id="custom-cursor" class="custom-cursor" aria-hidden="true">
+        <div class="cursor-h-line"></div>
+        <div class="cursor-v-line"></div>
+        <div class="cursor-dot"></div>
+    </div>
+    <div id="cursor-coords" class="cursor-coords" aria-hidden="true">
+        <span class="coord-x">X: 0.00</span>
+        <span class="coord-y">Y: 0.00</span>
+    </div>
+
+    <!-- ==================== INTERACTIVE CAD BACKGROUND ==================== -->
+    <div id="cad-bg-overlay" class="cad-bg-overlay" aria-hidden="true"></div>
+
+    <!-- ==================== NAVIGATION ==================== -->
+    <nav id="navbar" class="navbar">
+        <div class="container flex-between">
+            <a href="#hero" class="nav-logo" id="nav-logo">
+                <span class="logo-build">BUILD</span><span class="logo-cares">Cares</span>
+            </a>
+
+            <div class="nav-links" id="nav-links">
+                <a href="#hero" class="nav-link active" data-section="hero">Home</a>
+                <a href="#services" class="nav-link" data-section="services">Services</a>
+                <a href="#portfolio" class="nav-link" data-section="portfolio">Portfolio</a>
+                <a href="#about" class="nav-link" data-section="about">About</a>
+                <a href="#how-it-works" class="nav-link" data-section="how-it-works">Process</a>
+                <a href="#contact" class="nav-link" data-section="contact">Contact</a>
+            </div>
+
+            <div class="nav-right">
+                <a href="#contact" class="btn-primary nav-cta" id="nav-cta-btn">Get a Quote</a>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="#hero" class="mobile-link">Home</a>
+            <a href="#services" class="mobile-link">Services</a>
+            <a href="#portfolio" class="mobile-link">Portfolio</a>
+            <a href="#about" class="mobile-link">About</a>
+            <a href="#how-it-works" class="mobile-link">Process</a>
+            <a href="#contact" class="mobile-link">Contact</a>
+            <a href="#contact" class="btn-primary mobile-cta">Get a Quote</a>
+        </div>
+    </nav>
+
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="hero" class="hero-section section-dark">
+        <div id="hero-canvas" class="hero-canvas" aria-hidden="true"></div>
+
+        <svg class="hero-cad-overlay" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+                <pattern id="hero-grid-sm" width="30" height="30" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,229,255,0.04)" stroke-width="0.5"/>
+                </pattern>
+                <pattern id="hero-grid-lg" width="150" height="150" patternUnits="userSpaceOnUse">
+                    <path d="M 150 0 L 0 0 0 150" fill="none" stroke="rgba(0,229,255,0.08)" stroke-width="0.5"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hero-grid-sm)"/>
+            <rect width="100%" height="100%" fill="url(#hero-grid-lg)"/>
+            <line x1="100" y1="800" x2="400" y2="800" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+            <line x1="100" y1="800" x2="100" y2="500" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+            <text x="405" y="805" fill="rgba(0,229,255,0.3)" font-family="JetBrains Mono" font-size="10">X</text>
+            <text x="95" y="495" fill="rgba(0,229,255,0.3)" font-family="JetBrains Mono" font-size="10">Y</text>
+            <g class="hero-annotations" opacity="0.2">
+                <text x="60" y="50" fill="#00e5ff" font-family="JetBrains Mono" font-size="9">BUILDCARES // ARCHITECTURAL SERVICES</text>
+                <text x="60" y="65" fill="#8b95a5" font-family="JetBrains Mono" font-size="8">SCALE: 1:100 | UK STANDARDS</text>
+            </g>
+        </svg>
+
+        <div class="hero-content container">
+            <div class="hero-text">
+                <div class="text-label reveal stagger-1">
+                    <span class="label-line"></span>
+                    Freelance Architectural Subcontractor
+                </div>
+
+                <h1 class="heading-xl reveal stagger-2">
+                    THOUGHTFUL DESIGN,<br>
+                    <span class="text-accent">LASTING CARE.</span>
+                </h1>
+
+                <p class="text-body hero-description reveal stagger-3">
+                    Precision architectural drawings and CAD services for UK construction. From planning applications to building control — we deliver quality that gets approved.
+                </p>
+
+                <div class="hero-ctas reveal stagger-4">
+                    <a href="#portfolio" class="btn-primary" id="hero-cta-start">
+                        <span>VIEW OUR WORK</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#contact" class="btn-secondary" id="hero-cta-explore">
+                        <span>GET A QUOTE</span>
+                    </a>
+                </div>
+
+                <div class="hero-tech-indicators reveal stagger-5">
+                    <div class="tech-indicator">
+                        <span class="indicator-dot"></span>
+                        <span class="text-mono">PLANNING APPROVED</span>
+                    </div>
+                    <div class="tech-indicator">
+                        <span class="indicator-dot"></span>
+                        <span class="text-mono">3–5 DAY TURNAROUND</span>
+                    </div>
+                    <div class="tech-indicator">
+                        <span class="indicator-dot"></span>
+                        <span class="text-mono">UK STANDARDS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator" aria-hidden="true">
+            <span class="text-mono">SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+
+    <!-- ==================== SERVICES SECTION ==================== -->
+    <section id="services" class="section-padding section-darker">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">Our Expertise</span>
+                <h2 class="heading-lg reveal stagger-1">SERVICES <span class="text-accent">WE OFFER</span></h2>
+                <p class="text-body reveal stagger-2" style="max-width:640px;margin:0 auto;">
+                    Comprehensive architectural drawing and CAD services tailored for UK planning and building control requirements.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Garage Conversion -->
+                <div class="feature-card glass-card reveal">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="12" y="30" width="56" height="35" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <path d="M12 30 L40 12 L68 30" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <rect x="28" y="45" width="24" height="20" stroke="#2979ff" stroke-width="1" fill="rgba(41,121,255,0.1)" class="line-draw"/>
+                            <line x1="40" y1="45" x2="40" y2="65" stroke="#2979ff" stroke-width="0.5"/>
+                            <text x="40" y="75" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">CONVERSION</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Garage Conversion</h3>
+                    <p class="text-body">Transform your garage into valuable living space with detailed planning and building control drawings.</p>
+                </div>
+
+                <!-- Loft Conversion -->
+                <div class="feature-card glass-card reveal stagger-1">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="15" y="35" width="50" height="30" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <path d="M15 35 L40 15 L65 35" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <rect x="20" y="22" width="15" height="13" stroke="#2979ff" stroke-width="1" fill="rgba(41,121,255,0.08)" class="line-draw"/>
+                            <line x1="15" y1="35" x2="65" y2="35" stroke="#00e5ff" stroke-width="0.5" stroke-dasharray="3 2"/>
+                            <text x="40" y="75" fill="#00e5ff" font-family="JetBrains Mono" font-size="5" text-anchor="middle">DORMER</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Loft Conversion</h3>
+                    <p class="text-body">Unlock your loft's potential with dormer or hip-to-gable conversions, fully drawn to approval standard.</p>
+                </div>
+
+                <!-- Extensions -->
+                <div class="feature-card glass-card reveal stagger-2">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="10" y="25" width="30" height="40" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <rect x="40" y="30" width="28" height="35" stroke="#00e5ff" stroke-width="1.5" fill="none" stroke-dasharray="4 2" class="line-draw"/>
+                            <path d="M36 38 L44 38" stroke="#2979ff" stroke-width="1.5"/>
+                            <path d="M42 35 L44 38 L42 41" stroke="#2979ff" stroke-width="1" fill="none"/>
+                            <text x="54" y="50" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">NEW</text>
+                            <text x="25" y="50" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">EXIST</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Extensions</h3>
+                    <p class="text-body">Single, double or wrap-around extensions designed to maximise space and comply with planning regulations.</p>
+                </div>
+
+                <!-- New Build -->
+                <div class="feature-card glass-card reveal stagger-3">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <path d="M15 65 L15 30 L40 12 L65 30 L65 65 Z" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <rect x="25" y="40" width="10" height="10" stroke="#2979ff" stroke-width="0.8" fill="rgba(0,229,255,0.1)"/>
+                            <rect x="45" y="40" width="10" height="10" stroke="#2979ff" stroke-width="0.8" fill="rgba(0,229,255,0.1)"/>
+                            <rect x="33" y="50" width="14" height="15" stroke="#2979ff" stroke-width="1" fill="rgba(41,121,255,0.08)"/>
+                            <circle cx="44" cy="58" r="1" fill="#00e5ff"/>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">New Build</h3>
+                    <p class="text-body">Complete architectural packages for new residential builds from concept through to planning submission.</p>
+                </div>
+
+                <!-- Outbuilding -->
+                <div class="feature-card glass-card reveal stagger-4">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="20" y="35" width="40" height="28" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <line x1="20" y1="35" x2="40" y2="22" stroke="#00e5ff" stroke-width="1"/>
+                            <line x1="40" y1="22" x2="60" y2="35" stroke="#00e5ff" stroke-width="1"/>
+                            <rect x="32" y="42" width="16" height="12" stroke="#2979ff" stroke-width="0.8" fill="rgba(0,229,255,0.08)"/>
+                            <line x1="40" y1="42" x2="40" y2="54" stroke="#2979ff" stroke-width="0.5"/>
+                            <line x1="5" y1="68" x2="75" y2="68" stroke="rgba(0,229,255,0.15)" stroke-width="0.5" stroke-dasharray="3 3"/>
+                            <text x="40" y="75" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">GARDEN</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Outbuilding</h3>
+                    <p class="text-body">Garden rooms, home offices, studios and annexes — full drawings for permitted development or planning.</p>
+                </div>
+
+                <!-- Internal Changes -->
+                <div class="feature-card glass-card reveal stagger-5">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="15" y="20" width="50" height="40" stroke="#00e5ff" stroke-width="1.5" fill="none" class="line-draw"/>
+                            <line x1="40" y1="20" x2="40" y2="60" stroke="#4a5568" stroke-width="2" stroke-dasharray="4 3"/>
+                            <line x1="15" y1="40" x2="65" y2="40" stroke="#00e5ff" stroke-width="0.5"/>
+                            <path d="M36 25 L44 25" stroke="#ff4444" stroke-width="2"/>
+                            <text x="40" y="18" fill="#ff4444" font-family="JetBrains Mono" font-size="5" text-anchor="middle">REMOVE</text>
+                            <path d="M25 40 A10 10 0 0 1 35 50" stroke="#2979ff" stroke-width="0.8" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Internal Changes</h3>
+                    <p class="text-body">Structural internal alterations, wall removals and reconfigurations with precise building control drawings.</p>
+                </div>
+
+                <!-- Planning Drawings -->
+                <div class="feature-card glass-card reveal stagger-6">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="15" y="15" width="50" height="50" stroke="#00e5ff" stroke-width="1" fill="none" class="line-draw"/>
+                            <rect x="20" y="20" width="20" height="15" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <rect x="42" y="20" width="18" height="15" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <rect x="20" y="37" width="40" height="23" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <text x="30" y="30" fill="#8b95a5" font-family="JetBrains Mono" font-size="4.5" text-anchor="middle">BED</text>
+                            <text x="51" y="30" fill="#8b95a5" font-family="JetBrains Mono" font-size="4.5" text-anchor="middle">BATH</text>
+                            <text x="40" y="52" fill="#8b95a5" font-family="JetBrains Mono" font-size="4.5" text-anchor="middle">LIVING</text>
+                            <line x1="5" y1="70" x2="75" y2="70" stroke="#00e5ff" stroke-width="0.5"/>
+                            <text x="40" y="76" fill="#00e5ff" font-family="JetBrains Mono" font-size="5" text-anchor="middle">12,000mm</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Planning Drawings</h3>
+                    <p class="text-body">Full planning application packages including site plans, floor plans, elevations and sections.</p>
+                </div>
+
+                <!-- 3D Modelling -->
+                <div class="feature-card glass-card reveal">
+                    <div class="feature-icon">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <path d="M40 15 L65 30 L65 55 L40 70 L15 55 L15 30 Z" stroke="#00e5ff" stroke-width="1" fill="none" class="line-draw"/>
+                            <line x1="40" y1="15" x2="40" y2="70" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
+                            <line x1="15" y1="30" x2="65" y2="55" stroke="#00e5ff" stroke-width="0.3" opacity="0.3"/>
+                            <line x1="65" y1="30" x2="15" y2="55" stroke="#00e5ff" stroke-width="0.3" opacity="0.3"/>
+                            <path d="M40 15 L65 30 L65 55 L40 70" stroke="#00e5ff" stroke-width="1.5" fill="rgba(0,229,255,0.05)"/>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">3D Modelling</h3>
+                    <p class="text-body">Photorealistic SketchUp and Revit models for presentations, client approvals and marketing visuals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== WHAT WE DELIVER ==================== -->
+    <section id="deliver" class="section-padding section-dark">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">Specialisation</span>
+                <h2 class="heading-lg reveal stagger-1">WHAT WE <span class="text-accent">DELIVER</span></h2>
+            </div>
+
+            <!-- CAD Editor Preview — Showing a floor plan to demonstrate quality -->
+            <div class="editor-container reveal stagger-2">
+                <div class="editor-toolbar">
+                    <div class="toolbar-section">
+                        <button class="tool-btn active" title="Select"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg></button>
+                        <button class="tool-btn" title="Wall"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18"/><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
+                        <button class="tool-btn" title="Door"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20"/><circle cx="15" cy="12" r="1.5"/></svg></button>
+                        <button class="tool-btn" title="Window"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
+                    </div>
+                    <div class="toolbar-divider"></div>
+                    <div class="toolbar-section">
+                        <button class="tool-btn" title="Dimension"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="8" x2="4" y2="16"/><line x1="20" y1="8" x2="20" y2="16"/></svg></button>
+                        <button class="tool-btn" title="Measure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h20M6 8v8M10 9v6M14 9v6M18 8v8"/></svg></button>
+                        <button class="tool-btn" title="Layers"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></button>
+                    </div>
+                </div>
+
+                <div class="editor-canvas">
+                    <div id="editor-floor-plan" class="editor-floor-plan"></div>
+                </div>
+
+                <div class="editor-properties">
+                    <div class="properties-header"><span class="text-mono">PROJECT DETAILS</span></div>
+                    <div class="properties-content">
+                        <div class="property-group">
+                            <div class="property-group-title">Drawing Info</div>
+                            <div class="property-row"><span class="property-label">Project</span><span class="property-value">BC-2024-001</span></div>
+                            <div class="property-row"><span class="property-label">Type</span><span class="property-value">Extension</span></div>
+                            <div class="property-row"><span class="property-label">Scale</span><span class="property-value">1:100</span></div>
+                            <div class="property-row"><span class="property-label">Rev</span><span class="property-value">A</span></div>
+                        </div>
+                        <div class="property-group">
+                            <div class="property-group-title">Dimensions</div>
+                            <div class="property-row"><span class="property-label">Width</span><span class="property-value">12,000 mm</span></div>
+                            <div class="property-row"><span class="property-label">Depth</span><span class="property-value">9,000 mm</span></div>
+                            <div class="property-row"><span class="property-label">Total Area</span><span class="property-value">108.0 m²</span></div>
+                        </div>
+                        <div class="property-group">
+                            <div class="property-group-title">Software</div>
+                            <div class="property-row"><span class="property-label">CAD</span><span class="property-value">AutoCAD</span></div>
+                            <div class="property-row"><span class="property-label">3D</span><span class="property-value">SketchUp</span></div>
+                            <div class="property-row"><span class="property-label">BIM</span><span class="property-value">Revit</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-statusbar">
+                    <div class="status-left">
+                        <span class="status-item text-mono">X: <span class="status-coord" id="editor-x">124.42</span></span>
+                        <span class="status-item text-mono">Y: <span class="status-coord" id="editor-y">89.31</span></span>
+                    </div>
+                    <div class="status-center">
+                        <span class="status-item text-mono">GRID: 10mm</span>
+                        <span class="status-divider">|</span>
+                        <span class="status-item text-mono">SCALE: 1:100</span>
+                    </div>
+                    <div class="status-right">
+                        <span class="status-item text-mono">LAYER: Walls</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== 2D → 3D SHOWCASE ==================== -->
+    <section id="transform" class="section-padding section-darker">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">Our Process</span>
+                <h2 class="heading-lg reveal stagger-1">FROM BLUEPRINT <span class="text-accent">TO 3D MODEL</span></h2>
+                <p class="text-body reveal stagger-2" style="max-width:640px;margin:0 auto;">We take your project from technical 2D drawings through to photorealistic 3D visualisations.</p>
+            </div>
+
+            <div class="transform-viewport" id="transform-viewport">
+                <div class="transform-2d" id="transform-2d">
+                    <div class="transform-label text-mono">2D FLOOR PLAN</div>
+                    <div id="transform-floor-plan" class="transform-plan-container"></div>
+                </div>
+
+                <div class="transform-progress" id="transform-progress">
+                    <div class="progress-track"><div class="progress-fill" id="transform-fill"></div></div>
+                    <div class="progress-stages">
+                        <span class="stage active">Blueprint</span>
+                        <span class="stage">Extrude</span>
+                        <span class="stage">Details</span>
+                        <span class="stage">3D Model</span>
+                    </div>
+                </div>
+
+                <div class="transform-3d" id="transform-3d">
+                    <div class="transform-label text-mono">3D VISUALISATION</div>
+                    <div id="transform-3d-canvas" class="transform-3d-container">
+                        <div class="isometric-building" id="isometric-building">
+                            <!-- ══ GROUND BASE PLATE ══ -->
+                            <div class="building-face iso-floor"></div>
+
+                            <!-- ══ MAIN HOUSE OUTER WALLS ══ -->
+                            <!-- Back wall (North face) full width -->
+                            <div class="building-face iso-wall iso-w-back"></div>
+                            <!-- Left wall (West face) full depth -->
+                            <div class="building-face iso-wall iso-w-left"></div>
+                            <!-- Right wall of main house (East, no garage) -->
+                            <div class="building-face iso-wall iso-w-right"></div>
+                            <!-- Front wall (South face) full width -->
+                            <div class="building-face iso-wall iso-w-front">
+                                <div class="iso-window" style="left:12%;top:25%;width:22%;height:30px;"></div>
+                                <div class="iso-window" style="left:55%;top:25%;width:18%;height:30px;"></div>
+                                <div class="iso-door-main"></div>
+                            </div>
+
+                            <!-- ══ GARAGE WING (right side) ══ -->
+                            <div class="building-face iso-wall iso-g-back"></div>
+                            <div class="building-face iso-wall iso-g-right"></div>
+                            <div class="building-face iso-wall iso-g-front">
+                                <div class="iso-garage-door"></div>
+                            </div>
+
+                            <!-- ══ INTERNAL PARTITION WALLS (Ground Floor) ══ -->
+                            <!-- Lounge / Study / Kitchen divider (vertical E-W) -->
+                            <div class="building-face iso-inner-wall iso-p-lounge-dining"></div>
+                            <!-- Dining / Kitchen split (partial) -->
+                            <div class="building-face iso-inner-wall iso-p-dining-kitchen"></div>
+                            <!-- Ground / Upper floor ceiling -->
+                            <div class="building-face iso-inner-wall iso-p-floor-split"></div>
+                            <!-- Hall / Utility / WC horizontal -->
+                            <div class="building-face iso-inner-wall iso-p-hall"></div>
+                            <div class="building-face iso-inner-wall iso-p-utility"></div>
+
+                            <!-- ══ INTERNAL PARTITION WALLS (Upper Floor) ══ -->
+                            <!-- Landing strip -->
+                            <div class="building-face iso-inner-wall iso-p-landing"></div>
+                            <!-- Master / Bed2 split -->
+                            <div class="building-face iso-inner-wall iso-p-master-split"></div>
+                            <div class="building-face iso-inner-wall iso-p-ensuite"></div>
+                            <!-- Bed3 / Bathroom -->
+                            <div class="building-face iso-inner-wall iso-p-bed3-bath"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== PORTFOLIO / PROJECTS ==================== -->
+    <section id="portfolio" class="section-padding section-dark">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">Portfolio</span>
+                <h2 class="heading-lg reveal stagger-1">RECENT <span class="text-accent">PROJECTS</span></h2>
+                <p class="text-body reveal stagger-2" style="max-width:640px;margin:0 auto;">A selection of architectural drawing projects delivered for UK clients.</p>
+            </div>
+
+            <div class="projects-grid">
+                <div class="project-card glass-card reveal">
+                    <div class="project-visual">
+                        <svg class="project-wireframe" viewBox="0 0 400 300" fill="none">
+                            <rect x="50" y="50" width="300" height="200" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <line x1="200" y1="50" x2="200" y2="250" stroke="#00e5ff" stroke-width="0.5"/>
+                            <line x1="50" y1="150" x2="200" y2="150" stroke="#00e5ff" stroke-width="0.5"/>
+                            <text x="125" y="105" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">LIVING</text>
+                            <text x="125" y="200" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">KITCHEN</text>
+                            <text x="300" y="150" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">BEDROOM</text>
+                            <path d="M125 50 L125 35 L180 35 L180 50" stroke="#00e5ff" stroke-width="0.5" fill="none"/>
+                            <text x="152" y="32" fill="#00e5ff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">6,200</text>
+                        </svg>
+                        <div class="project-render">
+                            <div class="project-3d-building">
+                                <div class="p3d-face p3d-floor"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-front">
+                                    <div class="p3d-window" style="left: 20%; top: 30%;"></div>
+                                    <div class="p3d-window" style="left: 60%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-wall p3d-wall-right">
+                                    <div class="p3d-window" style="left: 40%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-roof"></div>
+                                <div class="p3d-glow" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-meta"><span class="text-mono text-accent">GARAGE CONVERSION</span><span class="project-status text-mono">● APPROVED</span></div>
+                        <h3 class="heading-sm">Residential Garage Conversion</h3>
+                        <div class="project-stats"><span class="text-mono">PLANNING + BUILDING CONTROL</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal stagger-1">
+                    <div class="project-visual">
+                        <svg class="project-wireframe" viewBox="0 0 400 300" fill="none">
+                            <rect x="60" y="60" width="280" height="180" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <line x1="60" y1="140" x2="340" y2="140" stroke="#00e5ff" stroke-width="0.5"/>
+                            <line x1="180" y1="60" x2="180" y2="240" stroke="#00e5ff" stroke-width="0.5"/>
+                            <text x="120" y="105" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">MASTER</text>
+                            <text x="260" y="105" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">EN-SUITE</text>
+                            <text x="120" y="195" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">LOUNGE</text>
+                        </svg>
+                        <div class="project-render">
+                            <div class="project-3d-building">
+                                <div class="p3d-face p3d-floor"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-front">
+                                    <div class="p3d-window" style="left: 20%; top: 30%;"></div>
+                                    <div class="p3d-window" style="left: 60%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-wall p3d-wall-right">
+                                    <div class="p3d-window" style="left: 40%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-roof"></div>
+                                <div class="p3d-glow" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-meta"><span class="text-mono text-accent">LOFT CONVERSION</span><span class="project-status text-mono">● COMPLETED</span></div>
+                        <h3 class="heading-sm">Dormer Loft Conversion</h3>
+                        <div class="project-stats"><span class="text-mono">HIP-TO-GABLE + DORMER</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal stagger-2">
+                    <div class="project-visual">
+                        <svg class="project-wireframe" viewBox="0 0 400 300" fill="none">
+                            <path d="M60 60 L280 60 L280 160 L180 160 L180 240 L60 240 Z" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <line x1="60" y1="160" x2="180" y2="160" stroke="#00e5ff" stroke-width="0.5"/>
+                            <text x="170" y="115" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">EXTENSION</text>
+                            <text x="120" y="205" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">KITCHEN</text>
+                        </svg>
+                        <div class="project-render">
+                            <div class="project-3d-building p3d-l-shape">
+                                <div class="p3d-face p3d-floor"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-back"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-far-right">
+                                    <div class="p3d-window" style="left: 50%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-wall p3d-wall-inner-h"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-inner-v"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-front">
+                                    <div class="p3d-window" style="left: 50%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-wall p3d-wall-far-left"></div>
+                                <div class="p3d-face p3d-roof"></div>
+                                <div class="p3d-glow" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-meta"><span class="text-mono text-accent">REAR EXTENSION</span><span class="project-status text-mono">● APPROVED</span></div>
+                        <h3 class="heading-sm">Single Storey Rear Extension</h3>
+                        <div class="project-stats"><span class="text-mono">PLANNING APPLICATION</span></div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal stagger-3">
+                    <div class="project-visual">
+                        <svg class="project-wireframe" viewBox="0 0 400 300" fill="none">
+                            <rect x="80" y="50" width="240" height="200" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <line x1="200" y1="50" x2="200" y2="250" stroke="#00e5ff" stroke-width="0.5"/>
+                            <line x1="80" y1="150" x2="320" y2="150" stroke="#00e5ff" stroke-width="0.5"/>
+                            <text x="140" y="105" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">BED 1</text>
+                            <text x="260" y="105" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">BED 2</text>
+                            <text x="140" y="205" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">LIVING</text>
+                            <text x="260" y="205" fill="#8b95a5" font-family="JetBrains Mono" font-size="8" text-anchor="middle">KITCHEN</text>
+                        </svg>
+                        <div class="project-render">
+                            <div class="project-3d-building">
+                                <div class="p3d-face p3d-floor"></div>
+                                <div class="p3d-face p3d-wall p3d-wall-front">
+                                    <div class="p3d-window" style="left: 20%; top: 30%;"></div>
+                                    <div class="p3d-window" style="left: 60%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-wall p3d-wall-right">
+                                    <div class="p3d-window" style="left: 40%; top: 30%;"></div>
+                                </div>
+                                <div class="p3d-face p3d-roof"></div>
+                                <div class="p3d-glow" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-meta"><span class="text-mono text-accent">NEW BUILD</span><span class="project-status text-mono">● IN PROGRESS</span></div>
+                        <h3 class="heading-sm">Detached New Build Residence</h3>
+                        <div class="project-stats"><span class="text-mono">FULL ARCHITECTURAL PACKAGE</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== WHY BUILDCARES ==================== -->
+    <section id="why" class="section-padding section-darker">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">Our Advantage</span>
+                <h2 class="heading-lg reveal stagger-1">WHY CHOOSE <span class="text-accent">BUILDCARES</span></h2>
+            </div>
+
+            <div class="features-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="feature-card glass-card reveal" style="text-align:center;">
+                    <div class="feature-icon" style="margin:0 auto 1.5rem;">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <circle cx="40" cy="40" r="24" stroke="#00e5ff" stroke-width="0.5" fill="none"/>
+                            <circle cx="40" cy="40" r="12" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <circle cx="40" cy="40" r="3" fill="#00e5ff" opacity="0.6"/>
+                            <line x1="40" y1="16" x2="40" y2="28" stroke="#00e5ff" stroke-width="0.5"/>
+                            <line x1="40" y1="52" x2="40" y2="64" stroke="#00e5ff" stroke-width="0.5"/>
+                            <line x1="16" y1="40" x2="28" y2="40" stroke="#00e5ff" stroke-width="0.5"/>
+                            <line x1="52" y1="40" x2="64" y2="40" stroke="#00e5ff" stroke-width="0.5"/>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Expertise & Precision</h3>
+                    <p class="text-body">CAD excellence with meticulous attention to every measurement and detail.</p>
+                </div>
+
+                <div class="feature-card glass-card reveal stagger-1" style="text-align:center;">
+                    <div class="feature-icon" style="margin:0 auto 1.5rem;">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <circle cx="40" cy="40" r="20" stroke="#00e5ff" stroke-width="0.5" fill="none" stroke-dasharray="2 4"/>
+                            <circle cx="40" cy="40" r="12" stroke="#00e5ff" stroke-width="1" fill="rgba(0,229,255,0.05)"/>
+                            <path d="M40 28 L40 40 L48 40" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <circle cx="40" cy="40" r="2" fill="#00e5ff"/>
+                            <text x="40" y="68" fill="#00e5ff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">3-5 DAYS</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Fast Turnaround</h3>
+                    <p class="text-body">Most projects delivered in 3–5 working days. Urgent submissions catered for.</p>
+                </div>
+
+                <div class="feature-card glass-card reveal stagger-2" style="text-align:center;">
+                    <div class="feature-icon" style="margin:0 auto 1.5rem;">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <rect x="10" y="20" width="20" height="20" stroke="#00e5ff" stroke-width="1" fill="none"/>
+                            <path d="M30 10 L50 22 L50 42 L30 54 L30 34" stroke="#00e5ff" stroke-width="1" fill="rgba(0,229,255,0.05)"/>
+                            <text x="17" y="33" fill="#00e5ff" font-family="JetBrains Mono" font-size="6">2D</text>
+                            <text x="37" y="33" fill="#00e5ff" font-family="JetBrains Mono" font-size="6">3D</text>
+                            <rect x="15" y="50" width="35" height="15" stroke="#00e5ff" stroke-width="0.5" fill="none"/>
+                            <text x="32" y="60" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">RENDER</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Full Service Range</h3>
+                    <p class="text-body">2D drawings, 3D models, Photoshop renders, Revit BIM — everything under one roof.</p>
+                </div>
+
+                <div class="feature-card glass-card reveal stagger-3" style="text-align:center;">
+                    <div class="feature-icon" style="margin:0 auto 1.5rem;">
+                        <svg class="feature-svg" viewBox="0 0 80 80" fill="none">
+                            <circle cx="40" cy="30" r="15" stroke="#00e5ff" stroke-width="0.5" fill="none"/>
+                            <text x="40" y="35" fill="#00e5ff" font-family="JetBrains Mono" font-size="10" text-anchor="middle">£</text>
+                            <line x1="20" y1="50" x2="60" y2="50" stroke="#00e5ff" stroke-width="0.5"/>
+                            <text x="40" y="62" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">COMPETITIVE</text>
+                            <text x="40" y="70" fill="#8b95a5" font-family="JetBrains Mono" font-size="5" text-anchor="middle">RATES</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-sm">Cost-Effective</h3>
+                    <p class="text-body">Competitive pricing without compromising quality — professional results at fair rates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== HOW IT WORKS ==================== -->
+    <section id="how-it-works" class="section-padding section-dark">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">Process</span>
+                <h2 class="heading-lg reveal stagger-1">HOW WE <span class="text-accent">WORK</span></h2>
+            </div>
+
+            <div class="timeline" id="timeline">
+                <div class="timeline-track"><div class="timeline-line" id="timeline-line"></div></div>
+
+                <div class="timeline-step" data-step="1">
+                    <div class="step-number text-mono">01</div>
+                    <div class="step-icon"><svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="20" stroke="#00e5ff" stroke-width="1" fill="none" opacity="0.3"/><circle cx="30" cy="30" r="5" fill="#00e5ff" opacity="0.5"/></svg></div>
+                    <h3 class="heading-sm">ENQUIRY</h3>
+                    <p class="text-body">Send us your project brief via WhatsApp or email.</p>
+                </div>
+
+                <div class="timeline-step" data-step="2">
+                    <div class="step-number text-mono">02</div>
+                    <div class="step-icon"><svg viewBox="0 0 60 60" fill="none"><rect x="12" y="12" width="36" height="36" stroke="#00e5ff" stroke-width="1" fill="none" opacity="0.3"/><line x1="12" y1="30" x2="48" y2="30" stroke="#00e5ff" stroke-width="0.5"/><line x1="30" y1="12" x2="30" y2="48" stroke="#00e5ff" stroke-width="0.5"/></svg></div>
+                    <h3 class="heading-sm">QUOTE</h3>
+                    <p class="text-body">We review and provide a competitive fixed-price quote.</p>
+                </div>
+
+                <div class="timeline-step" data-step="3">
+                    <div class="step-number text-mono">03</div>
+                    <div class="step-icon"><svg viewBox="0 0 60 60" fill="none"><rect x="15" y="15" width="30" height="30" stroke="#00e5ff" stroke-width="1" fill="none"/><line x1="10" y1="15" x2="10" y2="45" stroke="#2979ff" stroke-width="0.5"/><line x1="8" y1="15" x2="12" y2="15" stroke="#2979ff" stroke-width="0.5"/><line x1="8" y1="45" x2="12" y2="45" stroke="#2979ff" stroke-width="0.5"/></svg></div>
+                    <h3 class="heading-sm">DRAW</h3>
+                    <p class="text-body">We produce precision CAD drawings to UK standards.</p>
+                </div>
+
+                <div class="timeline-step" data-step="4">
+                    <div class="step-number text-mono">04</div>
+                    <div class="step-icon"><svg viewBox="0 0 60 60" fill="none"><path d="M30 10 L50 22 L50 42 L30 54 L10 42 L10 22 Z" stroke="#00e5ff" stroke-width="1" fill="rgba(0,229,255,0.05)"/></svg></div>
+                    <h3 class="heading-sm">REVIEW</h3>
+                    <p class="text-body">You review, we revise until you're fully satisfied.</p>
+                </div>
+
+                <div class="timeline-step" data-step="5">
+                    <div class="step-number text-mono">05</div>
+                    <div class="step-icon"><svg viewBox="0 0 60 60" fill="none"><rect x="15" y="20" width="30" height="30" stroke="#00e5ff" stroke-width="1" fill="rgba(0,229,255,0.05)"/><path d="M15 20 L30 10 L45 20" stroke="#00e5ff" stroke-width="1" fill="none"/><circle cx="48" cy="14" r="6" fill="#00e5ff" opacity="0.2" stroke="#00e5ff" stroke-width="0.5"/><path d="M45 14 L47 16 L51 12" stroke="#00e5ff" stroke-width="1" fill="none"/></svg></div>
+                    <h3 class="heading-sm">DELIVER</h3>
+                    <p class="text-body">Final drawings delivered ready for planning or building control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== ABOUT / ANWAR ==================== -->
+    <section id="about" class="section-padding section-darker">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="text-label reveal">About Us</span>
+                <h2 class="heading-lg reveal stagger-1">ARCHITECTURAL DESIGNER <span class="text-accent">& CAD TECHNICIAN</span></h2>
+            </div>
+
+            <div class="why-transform-container reveal stagger-2" style="gap:4rem;">
+                <!-- Skills Panel -->
+                <div class="why-stage" style="text-align:left;">
+                    <div class="tech-panel" style="padding:2rem;">
+                        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+                            <div style="width:48px;height:48px;background:var(--accent-cyan);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:var(--bg-primary);">A</div>
+                            <div>
+                                <div style="font-weight:600;font-size:1rem;color:var(--text-primary);">Anwar</div>
+                                <div class="text-mono text-dim">Architectural Designer & CAD Technician</div>
+                            </div>
+                        </div>
+
+                        <!-- Skill Bars -->
+                        <div style="display:flex;flex-direction:column;gap:1rem;">
+                            <div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span class="text-mono" style="font-size:0.65rem;color:var(--text-secondary);">Technical Drawings</span><span class="text-mono text-accent" style="font-size:0.65rem;">95%</span></div>
+                                <div style="height:4px;background:var(--bg-primary);"><div style="height:100%;width:95%;background:linear-gradient(to right,var(--accent-blue),var(--accent-cyan));"></div></div>
+                            </div>
+                            <div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span class="text-mono" style="font-size:0.65rem;color:var(--text-secondary);">3D Modelling</span><span class="text-mono text-accent" style="font-size:0.65rem;">90%</span></div>
+                                <div style="height:4px;background:var(--bg-primary);"><div style="height:100%;width:90%;background:linear-gradient(to right,var(--accent-blue),var(--accent-cyan));"></div></div>
+                            </div>
+                            <div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span class="text-mono" style="font-size:0.65rem;color:var(--text-secondary);">Design Modifications</span><span class="text-mono text-accent" style="font-size:0.65rem;">88%</span></div>
+                                <div style="height:4px;background:var(--bg-primary);"><div style="height:100%;width:88%;background:linear-gradient(to right,var(--accent-blue),var(--accent-cyan));"></div></div>
+                            </div>
+                            <div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span class="text-mono" style="font-size:0.65rem;color:var(--text-secondary);">Documentation</span><span class="text-mono text-accent" style="font-size:0.65rem;">92%</span></div>
+                                <div style="height:4px;background:var(--bg-primary);"><div style="height:100%;width:92%;background:linear-gradient(to right,var(--accent-blue),var(--accent-cyan));"></div></div>
+                            </div>
+                        </div>
+
+                        <!-- Software Used -->
+                        <div style="margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid var(--border-subtle);">
+                                <span class="text-mono text-accent" style="font-size:0.7rem;font-weight:600;">Sk</span>
+                                <div><div style="font-size:0.8rem;font-weight:500;">SketchUp</div><div class="text-mono text-dim" style="font-size:0.6rem;">3D Modelling</div></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid var(--border-subtle);">
+                                <span class="text-mono text-accent" style="font-size:0.7rem;font-weight:600;">Rv</span>
+                                <div><div style="font-size:0.8rem;font-weight:500;">Revit</div><div class="text-mono text-dim" style="font-size:0.6rem;">BIM & 3D</div></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid var(--border-subtle);">
+                                <span class="text-mono text-accent" style="font-size:0.7rem;font-weight:600;">AC</span>
+                                <div><div style="font-size:0.8rem;font-weight:500;">AutoCAD</div><div class="text-mono text-dim" style="font-size:0.6rem;">2D Drafting</div></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid var(--border-subtle);">
+                                <span class="text-mono text-accent" style="font-size:0.7rem;font-weight:600;">Ps</span>
+                                <div><div style="font-size:0.8rem;font-weight:500;">Photoshop</div><div class="text-mono text-dim" style="font-size:0.6rem;">Rendering</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Text -->
+                <div class="why-stage" style="text-align:left;">
+                    <p class="text-body" style="margin-bottom:1.5rem;">
+                        BuildCares is a Pakistan-based freelance architectural drawing service specialising in UK residential projects. We act as a skilled subcontractor, working directly with architects, builders and homeowners.
+                    </p>
+                    <p class="text-body" style="margin-bottom:2rem;">
+                        Using industry-leading software — AutoCAD, Revit, SketchUp and Photoshop — we produce precise, professional drawings that meet UK planning and building control standards, delivered fast.
+                    </p>
+
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2rem;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;"><span class="indicator-dot"></span><span class="text-body" style="font-size:0.875rem;">Technical drawings for planning applications</span></div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;"><span class="indicator-dot"></span><span class="text-body" style="font-size:0.875rem;">Building regulations compliance drawings</span></div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;"><span class="indicator-dot"></span><span class="text-body" style="font-size:0.875rem;">3D visualisations and photorealistic renders</span></div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;"><span class="indicator-dot"></span><span class="text-body" style="font-size:0.875rem;">Fast turnaround with clear communication</span></div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;"><span class="indicator-dot"></span><span class="text-body" style="font-size:0.875rem;">Competitive rates with no compromise on quality</span></div>
+                    </div>
+
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                        <a href="#contact" class="btn-primary">Start a Project</a>
+                        <a href="#portfolio" class="btn-secondary">See Portfolio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== CONTACT / CTA ==================== -->
+    <section id="contact" class="section-dark final-cta-section">
+        <div class="final-cta-bg" aria-hidden="true">
+            <svg class="final-cta-grid" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <pattern id="cta-grid-sm" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,229,255,0.03)" stroke-width="0.5"/></pattern>
+                    <radialGradient id="cta-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(0,229,255,0.08)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#cta-grid-sm)"/>
+                <circle cx="720" cy="450" r="400" fill="url(#cta-glow)"/>
+            </svg>
+            <div class="cta-construction-lines"><div class="construction-line cl-1"></div><div class="construction-line cl-2"></div><div class="construction-line cl-3"></div><div class="construction-line cl-4"></div><div class="construction-line cl-5"></div></div>
+        </div>
+
+        <div class="container final-cta-content">
+            <div class="text-label reveal">Ready to Build?</div>
+            <h2 class="heading-xl reveal stagger-1">
+                HAVE A PROJECT<br>
+                <span class="text-accent">IN MIND?</span>
+            </h2>
+            <p class="text-body reveal stagger-2" style="max-width:520px;margin:1.5rem auto 0;">
+                Get in touch today for a free consultation and quote. Most enquiries receive a response within a few hours.
+            </p>
+
+            <div class="final-cta-buttons reveal stagger-3">
+                <a href="https://wa.me/447586750755" target="_blank" rel="noopener noreferrer" class="btn-primary btn-large" id="final-cta-whatsapp">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.85 11.85 0 0012.07 0C5.4 0 .01 5.37 0 12.02c0 2.12.56 4.19 1.62 6l-1.7 6.21 6.38-1.67a12.02 12.02 0 005.75 1.47h.01c6.65 0 12.04-5.38 12.05-12.02a11.92 11.92 0 00-3.59-8.53z"/></svg>
+                    <span>WHATSAPP US</span>
+                </a>
+                <a href="mailto:anwar@buildcares.com" class="btn-secondary btn-large" id="final-cta-email">
+                    <span>EMAIL US</span>
+                </a>
+            </div>
+
+            <div style="display:flex;gap:3rem;justify-content:center;margin-top:3rem;flex-wrap:wrap;" class="reveal stagger-4">
+                <div style="text-align:center;">
+                    <div class="text-mono text-dim" style="font-size:0.6rem;margin-bottom:0.25rem;">WHATSAPP</div>
+                    <div class="text-mono text-accent" style="font-size:0.8rem;">+44 7586 750755</div>
+                </div>
+                <div style="text-align:center;">
+                    <div class="text-mono text-dim" style="font-size:0.6rem;margin-bottom:0.25rem;">HOURS</div>
+                    <div class="text-mono" style="font-size:0.8rem;color:var(--text-primary);">Mon–Sun 9AM–10PM</div>
+                </div>
+                <div style="text-align:center;">
+                    <div class="text-mono text-dim" style="font-size:0.6rem;margin-bottom:0.25rem;">TURNAROUND</div>
+                    <div class="text-mono text-accent" style="font-size:0.8rem;">3–5 Working Days</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer section-darker">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#hero" class="nav-logo footer-logo"><span class="logo-build">BUILD</span><span class="logo-cares">Cares</span></a>
+                    <p class="text-body footer-description">Freelance architectural design and CAD subcontractor delivering precision drawings for UK construction projects.</p>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:1rem;">
+                        <a href="https://wa.me/447586750755" target="_blank" rel="noopener noreferrer" class="footer-link" style="color:var(--accent-cyan);">📱 +44 7586 750755</a>
+                        <a href="mailto:anwar@buildcares.com" class="footer-link">✉️ anwar@buildcares.com</a>
+                    </div>
+                </div>
+
+                <div class="footer-links-group">
+                    <h4 class="footer-title text-mono">SERVICES</h4>
+                    <a href="#services" class="footer-link">Garage Conversion</a>
+                    <a href="#services" class="footer-link">Loft Conversion</a>
+                    <a href="#services" class="footer-link">Extensions</a>
+                    <a href="#services" class="footer-link">New Build</a>
+                    <a href="#services" class="footer-link">Outbuilding</a>
+                    <a href="#services" class="footer-link">Internal Changes</a>
+                </div>
+
+                <div class="footer-links-group">
+                    <h4 class="footer-title text-mono">QUICK LINKS</h4>
+                    <a href="#hero" class="footer-link">Home</a>
+                    <a href="#portfolio" class="footer-link">Portfolio</a>
+                    <a href="#about" class="footer-link">About</a>
+                    <a href="#how-it-works" class="footer-link">Process</a>
+                    <a href="#contact" class="footer-link">Contact</a>
+                </div>
+
+                <div class="footer-links-group">
+                    <h4 class="footer-title text-mono">DELIVERABLES</h4>
+                    <a href="#deliver" class="footer-link">Planning Drawings</a>
+                    <a href="#deliver" class="footer-link">Building Control</a>
+                    <a href="#deliver" class="footer-link">3D Modelling</a>
+                    <a href="#deliver" class="footer-link">Design Modifications</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-line"></div>
+                <div class="footer-bottom-content flex-between">
+                    <span class="text-mono text-dim">© 2026 BUILDCARES. ALL RIGHTS RESERVED.</span>
+                    <span class="text-mono text-dim">PRECISION DRAWINGS • UK STANDARDS • FAST DELIVERY</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script src="js/floor-plan.js?v=15" defer></script>
+    <script src="js/hero-scene.js?v=15" defer></script>
+    <script src="js/cad-background.js?v=15" defer></script>
+    <script src="js/sections.js?v=15" defer></script>
+    <script src="js/main.js?v=15" defer></script>
+
+</body>
+</html>
