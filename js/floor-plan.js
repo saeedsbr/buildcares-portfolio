@@ -251,8 +251,8 @@ window.FloorPlan = {
     // ── ROOM LABELS & AREA (Zero Text Collisions) ───────────────────
     const ls = `font-family:'Space Grotesk',sans-serif;text-anchor:middle;dominant-baseline:middle;`;
     const label = (name, area, x, y) => `
-      <text x="${x}" y="${y}" fill="#8b95a5" font-size="22" font-weight="600" style="${ls}">${name}</text>
-      ${!simplified ? `<text x="${x}" y="${y+28}" fill="rgba(0,229,255,0.65)" font-size="14" style="${ls}">${area} m²</text>` : ''}`;
+      <text x="${x}" y="${y}" fill="#cbd5e1" font-size="22" font-weight="600" style="${ls}">${name}</text>
+      ${!simplified ? `<text x="${x}" y="${y+28}" fill="rgba(56,189,248,0.85)" font-size="14" style="${ls}">${area} m²</text>` : ''}`;
 
     svg += `<g class="labels">
       ${label('LOUNGE',           '24.5', (x0 + x2) / 2, (y0 + y1) / 2)}
