@@ -979,21 +979,12 @@
         function applyFilter(filter) {
             cards = document.querySelectorAll('.pf-card');
             filterBtns.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
-            let visible = 0;
             cards.forEach(card => {
                 const show = filter === 'all' || card.dataset.category === filter;
                 card.style.display = show ? 'flex' : 'none';
-                if (show) visible++;
             });
-
-            if (visible === 1) {
-                grid.style.gridTemplateColumns = '1fr';
-            } else if (visible === 2) {
-                grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            } else {
-                grid.style.gridTemplateColumns = '';
-            }
         }
+
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
