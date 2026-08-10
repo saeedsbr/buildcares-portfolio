@@ -752,10 +752,11 @@
                     const statusClass = p.status || 'approved';
                     const statusText = statusClass === 'approved' ? '● APPROVED' : (statusClass === 'completed' ? '● COMPLETED' : '● IN PROGRESS');
                     const categoryLabel = p.category.replace('-', ' ').toUpperCase();
+                    const imgSrc = (p.image && !p.image.startsWith('data:application/pdf') && p.image.length > 5) ? p.image : 'images/drawing-sheet-sample.png';
                     return `
                         <div class="pf-card" data-category="${p.category}">
                             <div class="pf-card-img">
-                                <img src="${p.image}" alt="${p.title}">
+                                <img src="${imgSrc}" alt="${p.title}" onerror="this.src='images/drawing-sheet-sample.png'">
                                 <span class="pf-badge ${statusClass}">${statusText}</span>
                             </div>
                             <div class="pf-card-body">

@@ -752,9 +752,11 @@
                 return;
             }
 
-            container.innerHTML = projects.map(p => `
+            container.innerHTML = projects.map(p => {
+                const imgSrc = (p.image && !p.image.startsWith('data:application/pdf')) ? p.image : 'images/drawing-sheet-sample.png';
+                return `
                 <div class="project-item-card" id="p-item-${p.id}">
-                    <img src="${p.image}" alt="${p.title}" class="project-thumb">
+                    <img src="${imgSrc}" alt="${p.title}" class="project-thumb" onerror="this.src='images/drawing-sheet-sample.png'">
                     <div class="project-details">
                         <div class="project-title-row">
                             <span class="project-item-title">${p.title}</span>
@@ -768,7 +770,7 @@
                         <button class="btn-sm btn-danger" onclick="deleteProject('${p.id}')">🗑️ Delete</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // ── FILE UPLOAD / BROWSE HANDLER (JPG, PNG, PDF) ──
@@ -795,41 +797,45 @@
                     };
                     reader.readAsDataURL(file);
                 } else if (file.type === 'application/pdf') {
-                    // For PDF files, generate a PDF thumbnail placeholder or read DataURL
-                    const reader = new FileReader();
-                    reader.onload = (evt) => {
-                        const dataUrl = evt.target.result;
-                        previewImg.src = 'images/drawing-sheet-sample.png'; // CAD Sheet thumbnail for PDF
-                        imageInput.value = dataUrl; // Base64 PDF data
-                        previewName.textContent = '📄 PDF Drawing Sheet: ' + file.name;
-                    };
-                    reader.readAsDataURL(file);
+                    // For PDF files, set the visual card image to the CAD Drawing Sheet preset so it renders crisp in <img>
+                    imageInput.value = 'images/drawing-sheet-sample.png';
+                    previewImg.src = 'images/drawing-sheet-sample.png';
+                    previewName.textContent = '📄 PDF Architectural Drawing: ' + file.name;
                 }
             });
         }
 
         document.getElementById('add-project-form').addEventListener('submit', (e) => {
-
             e.preventDefault();
             const projects = getProjects();
+            let imgVal = document.getElementById('proj-image').value.trim();
+
+            // If empty, broken, or raw pdf data url, fallback to CAD drawing sheet preset
+            if (!imgVal || imgVal.startsWith('data:application/pdf') || imgVal.length < 5) {
+                imgVal = 'images/drawing-sheet-sample.png';
+            }
+
             const newProj = {
                 id: Date.now().toString(),
-                title: document.getElementById('proj-title').value.trim(),
+                title: document.getElementById('proj-title').value.trim() || 'Architectural Project',
                 category: document.getElementById('proj-category').value,
                 status: document.getElementById('proj-status').value,
-                location: document.getElementById('proj-location').value.trim(),
-                area: document.getElementById('proj-area').value.trim(),
-                package: document.getElementById('proj-package').value.trim(),
-                image: document.getElementById('proj-image').value.trim(),
-                desc: document.getElementById('proj-desc').value.trim()
+                location: document.getElementById('proj-location').value.trim() || 'UK',
+                area: document.getElementById('proj-area').value.trim() || 'A1 Sheet',
+                package: document.getElementById('proj-package').value.trim() || 'Planning Application',
+                image: imgVal,
+                desc: document.getElementById('proj-desc').value.trim() || 'Architectural drawing and CAD package.'
             };
 
             projects.unshift(newProj); // Add to top
             saveProjects(projects);
             loadProjectsList();
             document.getElementById('add-project-form').reset();
+            document.getElementById('proj-image').value = 'images/drawing-sheet-sample.png';
+            document.getElementById('file-preview-box').style.display = 'none';
             showAlert('✅ Project added to Portfolio successfully!');
         });
+
 
         function deleteProject(id) {
             if (!confirm('Are you sure you want to delete this project?')) return;
