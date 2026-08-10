@@ -439,8 +439,17 @@
 
                             <div class="grid-2">
                                 <div class="form-group">
-                                    <label class="form-label" for="proj-image">Image URL / Select Preset</label>
-                                    <select id="proj-image-preset" class="form-select" style="margin-bottom:0.5rem;" onchange="document.getElementById('proj-image').value=this.value;">
+                                    <label class="form-label" for="proj-file-input">📁 Upload Image / Architectural PDF from Computer</label>
+                                    <input type="file" id="proj-file-input" class="form-input" accept="image/*,.pdf">
+                                    <div id="file-preview-box" style="margin-top:0.5rem;display:none;align-items:center;gap:0.75rem;padding:0.5rem;background:rgba(0,229,255,0.05);border:1px solid var(--admin-border);">
+                                        <img id="file-preview-img" src="" alt="Preview" style="max-height:70px;max-width:100px;border:1px solid var(--line-color);object-fit:cover;">
+                                        <span id="file-preview-name" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent-cyan);"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-image">Image URL or Preset Selection</label>
+                                    <select id="proj-image-preset" class="form-select" style="margin-bottom:0.5rem;" onchange="document.getElementById('proj-image').value=this.value; document.getElementById('file-preview-img').src=this.value; document.getElementById('file-preview-box').style.display='flex'; document.getElementById('file-preview-name').textContent='Selected Preset';">
+                                        <option value="images/drawing-sheet-sample.png">★ Preset: Full Architectural CAD Drawing Sheet (Plans & Elevations)</option>
                                         <option value="images/extensions.png">Preset: Extensions Visualisation</option>
                                         <option value="images/garage-conversion.png">Preset: Garage Conversion Visualisation</option>
                                         <option value="images/loft-conversion.png">Preset: Loft Conversion Visualisation</option>
@@ -448,12 +457,12 @@
                                         <option value="images/outbuilding.png">Preset: Outbuilding Visualisation</option>
                                         <option value="images/internal-changes.png">Preset: Internal Changes Visualisation</option>
                                     </select>
-                                    <input type="text" id="proj-image" class="form-input" value="images/extensions.png" placeholder="Custom image URL" required>
+                                    <input type="text" id="proj-image" class="form-input" value="images/extensions.png" placeholder="Image URL / Data URL" required>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="proj-package">Package Type</label>
-                                    <input type="text" id="proj-package" class="form-input" placeholder="e.g. Planning + Building Control" required>
-                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="proj-package">Package Type / Drawing Deliverable</label>
+                                <input type="text" id="proj-package" class="form-input" placeholder="e.g. Planning Application + Building Control Sheets" required>
                             </div>
 
                             <div class="form-group">
@@ -593,14 +602,14 @@
             },
             {
                 id: '2',
-                title: 'Dormer Loft — Master Bedroom + En-Suite',
+                title: 'Dormer Loft & Rear Extension CAD Drawing Sheet',
                 category: 'loft-conversion',
-                status: 'completed',
-                location: 'Leeds, UK',
-                area: '34 m²',
-                package: 'Hip-to-Gable + Dormer',
-                image: 'images/loft-conversion.png',
-                desc: 'Hip-to-gable loft conversion with rear dormer box and Velux windows to front. Full planning drawings, section details, elevations, and building regulations package.'
+                status: 'approved',
+                location: 'London, UK',
+                area: 'A1 Sheet 1:100',
+                package: 'Full Planning Drawing Sheet',
+                image: 'images/drawing-sheet-sample.png',
+                desc: 'Complete architectural CAD drawing sheet featuring Existing & Proposed Ground/Loft Floor Plans, Front & Rear Elevations, Section details, and Isometric 3D Model view.'
             },
             {
                 id: '3',
@@ -762,7 +771,45 @@
             `).join('');
         }
 
+        // ── FILE UPLOAD / BROWSE HANDLER (JPG, PNG, PDF) ──
+        const fileInput = document.getElementById('proj-file-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const previewBox = document.getElementById('file-preview-box');
+                const previewImg = document.getElementById('file-preview-img');
+                const previewName = document.getElementById('file-preview-name');
+                const imageInput = document.getElementById('proj-image');
+
+                previewName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+                previewBox.style.display = 'flex';
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const dataUrl = evt.target.result;
+                        previewImg.src = dataUrl;
+                        imageInput.value = dataUrl;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type === 'application/pdf') {
+                    // For PDF files, generate a PDF thumbnail placeholder or read DataURL
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const dataUrl = evt.target.result;
+                        previewImg.src = 'images/drawing-sheet-sample.png'; // CAD Sheet thumbnail for PDF
+                        imageInput.value = dataUrl; // Base64 PDF data
+                        previewName.textContent = '📄 PDF Drawing Sheet: ' + file.name;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
         document.getElementById('add-project-form').addEventListener('submit', (e) => {
+
             e.preventDefault();
             const projects = getProjects();
             const newProj = {

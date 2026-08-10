@@ -431,25 +431,25 @@
                 <!-- ── Loft Conversion 1 ── -->
                 <div class="pf-card" data-category="loft-conversion">
                     <div class="pf-card-img">
-                        <img src="images/loft-conversion.png" alt="Dormer Loft Conversion with En-Suite">
-                        <span class="pf-badge completed">● COMPLETED</span>
+                        <img src="images/drawing-sheet-sample.png" alt="Full Architectural CAD Drawing Sheet">
+                        <span class="pf-badge approved">● APPROVED</span>
                     </div>
                     <div class="pf-card-body">
                         <div class="pf-tag">Loft Conversion</div>
-                        <h2 class="pf-card-title">Dormer Loft — Master Bedroom + En-Suite</h2>
-                        <p class="pf-card-desc">Hip-to-gable loft conversion with rear dormer box and Velux windows to front. Full planning drawings, section details, elevations, and building regulations package.</p>
+                        <h2 class="pf-card-title">Dormer Loft & Rear Extension CAD Drawing Sheet</h2>
+                        <p class="pf-card-desc">Complete architectural CAD drawing sheet featuring Existing & Proposed Ground/Loft Floor Plans, Front & Rear Elevations, Section details, and Isometric 3D Model view.</p>
                         <div class="pf-meta">
                             <div class="pf-meta-item">
                                 <span class="pf-meta-label">Location</span>
-                                <span class="pf-meta-value">Leeds, UK</span>
+                                <span class="pf-meta-value">London, UK</span>
                             </div>
                             <div class="pf-meta-item">
                                 <span class="pf-meta-label">Package</span>
-                                <span class="pf-meta-value">Hip-to-Gable + Dormer</span>
+                                <span class="pf-meta-value">Full Planning Sheet</span>
                             </div>
                             <div class="pf-meta-item">
-                                <span class="pf-meta-label">Area</span>
-                                <span class="pf-meta-value">34 m²</span>
+                                <span class="pf-meta-label">Scale</span>
+                                <span class="pf-meta-value">A1 1:100</span>
                             </div>
                         </div>
                     </div>
@@ -717,11 +717,26 @@
                     <span class="text-mono text-dim">PRECISION DRAWINGS • UK STANDARDS • <a href="admin.html" style="color:var(--text-dim);text-decoration:underline;">ADMIN LOGIN</a></span>
                 </div>
             </div>
+    <!-- ==================== DRAWING LIGHTBOX MODAL ==================== -->
+    <div id="drawing-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(10,14,23,0.92);backdrop-filter:blur(10px);padding:2rem;align-items:center;justify-content:center;">
+        <button id="close-modal-btn" style="position:absolute;top:1.5rem;right:2rem;font-family:var(--font-mono);font-size:1.2rem;color:var(--accent-cyan);background:rgba(0,229,255,0.1);border:1px solid var(--accent-cyan);padding:0.4rem 1rem;cursor:pointer;">✕ CLOSE DRAWING SHEET</button>
+        <div style="max-width:1100px;width:100%;max-height:90vh;background:#ffffff;border:2px solid var(--accent-cyan);box-shadow:0 25px 50px rgba(0,0,0,0.8);overflow:auto;padding:1.5rem;position:relative;border-radius:4px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:1px solid #e2e8f0;padding-bottom:0.75rem;flex-wrap:wrap;gap:1rem;">
+                <div>
+                    <span id="modal-tag" style="font-family:var(--font-mono);font-size:0.7rem;color:#0284c7;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">ARCHITECTURAL DRAWING SHEET</span>
+                    <h2 id="modal-title" style="font-size:1.25rem;color:#0f172a;margin:0.2rem 0 0;">Project Title</h2>
+                </div>
+                <a id="modal-download" href="#" target="_blank" class="btn-primary" style="padding:0.5rem 1rem;font-size:0.75rem;">🔍 Open High-Res Fullscreen</a>
+            </div>
+            <div style="text-align:center;background:#f8fafc;padding:1rem;border:1px solid #cbd5e1;overflow:auto;">
+                <img id="modal-img" src="" alt="CAD Drawing Sheet" style="max-width:100%;max-height:70vh;object-fit:contain;box-shadow:0 8px 30px rgba(0,0,0,0.12);">
+            </div>
         </div>
-    </footer>
+    </div>
 
 
     <!-- ==================== SCRIPTS ==================== -->
+
     <script src="js/main.js?v=17" defer></script>
     <script>
         // ── Dynamic Data Sync from Admin (localStorage) ──
@@ -769,6 +784,39 @@
         }
 
         renderDynamicProjects();
+
+        // ── DRAWING LIGHTBOX MODAL HANDLERS ──
+        function initLightbox() {
+            const modal = document.getElementById('drawing-modal');
+            const modalImg = document.getElementById('modal-img');
+            const modalTitle = document.getElementById('modal-title');
+            const modalTag = document.getElementById('modal-tag');
+            const modalDownload = document.getElementById('modal-download');
+            const closeBtn = document.getElementById('close-modal-btn');
+
+            document.querySelectorAll('.pf-card').forEach(card => {
+                const img = card.querySelector('.pf-card-img img');
+                const title = card.querySelector('.pf-card-title')?.textContent || 'Architectural Drawing';
+                const tag = card.querySelector('.pf-tag')?.textContent || 'CAD SHEET';
+
+                if (img) {
+                    img.style.cursor = 'zoom-in';
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        modalImg.src = img.src;
+                        modalTitle.textContent = title;
+                        modalTag.textContent = tag + ' • DRAWING SHEET & ELEVATIONS';
+                        modalDownload.href = img.src;
+                        modal.style.display = 'flex';
+                    });
+                }
+            });
+
+            closeBtn?.addEventListener('click', () => { modal.style.display = 'none'; });
+            modal?.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+        }
+
+        initLightbox();
 
         // ── Filter Logic ──
         const filterBtns = document.querySelectorAll('.filter-btn');
