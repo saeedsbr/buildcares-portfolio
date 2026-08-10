@@ -30,7 +30,17 @@
             
             this.handleResize = this.handleResize.bind(this);
             this.handleMouseMove = this.handleMouseMove.bind(this);
+            this.handlePointerDown = this.handlePointerDown.bind(this);
+            this.handlePointerMove = this.handlePointerMove.bind(this);
+            this.handlePointerUp = this.handlePointerUp.bind(this);
             this.render = this.render.bind(this);
+
+            // Drag Rotation State
+            this.isDragging = false;
+            this.previousPointerX = 0;
+            this.previousPointerY = 0;
+            this.rotationVelocityX = 0;
+            this.rotationVelocityY = 0;
         }
 
         init(containerId) {
@@ -59,6 +69,9 @@
             this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             this.container.appendChild(this.renderer.domElement);
 
+            // Set grab cursor
+            this.container.style.cursor = 'grab';
+
             // Lighting
             const ambientLight = new THREE.AmbientLight(0x4488cc, 0.3);
             this.scene.add(ambientLight);
@@ -83,12 +96,18 @@
             window.addEventListener('resize', this.handleResize);
             document.addEventListener('mousemove', this.handleMouseMove);
 
+            // Pointer Drag Listeners for 360 House Rotation
+            this.container.addEventListener('pointerdown', this.handlePointerDown);
+            window.addEventListener('pointermove', this.handlePointerMove);
+            window.addEventListener('pointerup', this.handlePointerUp);
+
             // Start Render Loop
             this.render();
 
             // Start Construction Sequence
             this.startConstructionSequence();
         }
+
 
         createGrid() {
             // Main Grid
@@ -568,14 +587,58 @@
             this.targetY = (this.mouseY / this.windowHalfY) * 1.5;
         }
 
+        handlePointerDown(event) {
+            this.isDragging = true;
+            this.previousPointerX = event.clientX;
+            this.previousPointerY = event.clientY;
+            if (this.container) this.container.style.cursor = 'grabbing';
+        }
+
+        handlePointerMove(event) {
+            if (!this.isDragging || !this.buildingGroup) return;
+
+            const deltaX = event.clientX - this.previousPointerX;
+            const deltaY = event.clientY - this.previousPointerY;
+
+            this.rotationVelocityY = deltaX * 0.008;
+            this.rotationVelocityX = deltaY * 0.004;
+
+            this.buildingGroup.rotation.y += this.rotationVelocityY;
+            this.buildingGroup.rotation.x += this.rotationVelocityX;
+
+            // Clamp pitch tilt between -0.4 and 0.5 so house stays right side up
+            this.buildingGroup.rotation.x = Math.max(-0.4, Math.min(0.5, this.buildingGroup.rotation.x));
+
+            this.previousPointerX = event.clientX;
+            this.previousPointerY = event.clientY;
+        }
+
+        handlePointerUp() {
+            this.isDragging = false;
+            if (this.container) this.container.style.cursor = 'grab';
+        }
+
         render() {
             this.animationFrameId = requestAnimationFrame(this.render);
             
             const time = this.clock.getElapsedTime();
 
-            // Idle Animation: Auto-rotation
+            // 360 Rotation & Inertia Damping Logic
             if (this.buildingGroup) {
-                this.buildingGroup.rotation.y += 0.001;
+                if (this.isDragging) {
+                    // Direct user drag control active
+                } else if (Math.abs(this.rotationVelocityY) > 0.0001 || Math.abs(this.rotationVelocityX) > 0.0001) {
+                    // Smooth spin momentum damping
+                    this.buildingGroup.rotation.y += this.rotationVelocityY;
+                    this.buildingGroup.rotation.x += this.rotationVelocityX;
+                    this.rotationVelocityY *= 0.95;
+                    this.rotationVelocityX *= 0.95;
+                    this.buildingGroup.rotation.x += (0 - this.buildingGroup.rotation.x) * 0.02;
+                } else {
+                    // Gentle auto-rotation
+                    this.buildingGroup.rotation.y += 0.0015;
+                    this.buildingGroup.rotation.x += (0 - this.buildingGroup.rotation.x) * 0.05;
+                }
             }
             
             // Idle Animation: Window pulsing
@@ -606,6 +669,7 @@
 
             this.renderer.render(this.scene, this.camera);
         }
+
 
         dispose() {
             window.removeEventListener('resize', this.handleResize);
