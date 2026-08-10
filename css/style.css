@@ -1342,16 +1342,18 @@ button, a {
 /* ─── Features Grid ─── */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   margin-top: 3rem;
   background: var(--line-color);
 }
 
 .feature-card {
-  padding: 2rem;
+  padding: 0;
   background: var(--bg-secondary);
   transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .feature-card:hover {
@@ -1359,10 +1361,69 @@ button, a {
   border-color: var(--accent-cyan-dim);
 }
 
+/* Image-based feature cards */
+.feature-img-wrap {
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #f0f4f8;
+  border-bottom: 1px solid var(--line-color);
+}
+
+.feature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+}
+
+.feature-card:hover .feature-img {
+  transform: scale(1.04);
+}
+
+.feature-card .heading-sm,
+.feature-card .text-body,
+.feature-link {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.feature-card .heading-sm {
+  color: var(--text-primary);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.feature-card .text-body {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.feature-link {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  transition: gap 0.3s ease;
+}
+
+.feature-link:hover {
+  color: var(--text-primary);
+}
+
+/* Legacy SVG icon styles (for other sections) */
 .feature-icon {
   width: 80px;
   height: 80px;
   margin-bottom: 1.5rem;
+  margin-left: 2rem;
+  margin-top: 2rem;
 }
 
 .feature-svg {
@@ -1370,20 +1431,11 @@ button, a {
   height: 100%;
 }
 
-.feature-card .heading-sm {
-  color: var(--text-primary);
-  margin-bottom: 0.75rem;
-}
-
-.feature-card .text-body {
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
 
 /* ─── Projects Grid ─── */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-top: 3rem;
 }
@@ -2354,6 +2406,7 @@ button, a {
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .tech-grid { grid-template-columns: repeat(2, 1fr); }
   .projects-grid { grid-template-columns: repeat(2, 1fr); }
+
   
   .editor-container {
     grid-template-columns: 56px 1fr;

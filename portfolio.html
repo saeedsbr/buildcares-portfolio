@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio — BuildCares Architectural Projects</title>
+    <meta name="description" content="Explore BuildCares' portfolio of UK architectural drawing projects — garage conversions, loft conversions, extensions, new builds, outbuildings and internal changes.">
+    <link rel="icon" type="image/jpeg" href="https://buildcares.subthings.com/images/logo.jpeg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css?v=20">
+    <style>
+        /* ── Portfolio Page Overrides ── */
+        :root {
+            --portfolio-accent: #00e5ff;
+        }
+
+        /* Hero banner for portfolio page */
+        .portfolio-hero {
+            background: var(--bg-primary);
+            padding: 8rem 0 4rem;
+            border-bottom: 1px solid var(--line-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portfolio-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .portfolio-hero-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .portfolio-hero .text-label {
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .portfolio-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .portfolio-hero p {
+            max-width: 600px;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--line-color);
+        }
+
+        .filter-btn {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.5rem 1.25rem;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-cyan-dim);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--line-color);
+            margin: 3rem 0;
+        }
+
+        /* Portfolio Card */
+        .pf-card {
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pf-card[data-hidden="true"] {
+            display: none;
+        }
+
+        .pf-card:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .pf-card-img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: #f0f4f8;
+            border-bottom: 1px solid var(--line-color);
+            position: relative;
+        }
+
+        .pf-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .pf-card:hover .pf-card-img img {
+            transform: scale(1.06);
+        }
+
+        /* Status badge */
+        .pf-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            padding: 0.3rem 0.7rem;
+            border: 1px solid;
+            backdrop-filter: blur(8px);
+        }
+
+        .pf-badge.approved {
+            color: #22c55e;
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .pf-badge.completed {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.08);
+        }
+
+        .pf-badge.progress {
+            color: #f59e0b;
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .pf-card-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pf-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .pf-card-title {
+            font-family: var(--font-primary);
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            line-height: 1.3;
+        }
+
+        .pf-card-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex: 1;
+            margin-bottom: 1.25rem;
+        }
+
+        .pf-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .pf-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .pf-meta-label {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .pf-meta-value {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-primary);
+        }
+
+        /* CTA Banner */
+        .pf-cta-banner {
+            background: var(--bg-card);
+            border: 1px solid var(--line-color);
+            padding: 4rem 3rem;
+            text-align: center;
+            margin: 2rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pf-cta-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.04) 0%, transparent 70%);
+        }
+
+        .pf-cta-banner h2 {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            margin-bottom: 1rem;
+        }
+
+        .pf-cta-banner p {
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        .pf-cta-banner .cta-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Stats row */
+        .pf-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--line-color);
+            margin: 3rem 0;
+        }
+
+        .pf-stat {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .pf-stat-number {
+            font-family: var(--font-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            display: block;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .pf-stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+            .pf-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .portfolio-hero { padding: 6rem 0 3rem; }
+            .pf-stats { grid-template-columns: repeat(2, 1fr); }
+            .pf-cta-banner { padding: 2.5rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== CUSTOM CURSOR ==================== -->
+    <div id="custom-cursor" class="custom-cursor" aria-hidden="true">
+        <div class="cursor-h-line"></div>
+        <div class="cursor-v-line"></div>
+        <div class="cursor-dot"></div>
+    </div>
+    <div id="cursor-coords" class="cursor-coords" aria-hidden="true">
+        <span class="coord-x">X: 0.00</span>
+        <span class="coord-y">Y: 0.00</span>
+    </div>
+
+    <!-- ==================== NAVIGATION ==================== -->
+    <nav id="navbar" class="navbar">
+        <div class="container flex-between">
+            <a href="index.html" class="nav-logo" id="nav-logo">
+                <span class="logo-build">BUILD</span><span class="logo-cares">Cares</span>
+            </a>
+
+            <div class="nav-links" id="nav-links">
+                <a href="index.html#hero" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="portfolio.html" class="nav-link active">Portfolio</a>
+                <a href="index.html#about" class="nav-link">About</a>
+                <a href="index.html#how-it-works" class="nav-link">Process</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+            </div>
+
+            <div class="nav-right">
+                <a href="index.html#contact" class="btn-primary nav-cta" id="nav-cta-btn">Get a Quote</a>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="index.html" class="mobile-link">Home</a>
+            <a href="index.html#services" class="mobile-link">Services</a>
+            <a href="portfolio.html" class="mobile-link active">Portfolio</a>
+            <a href="index.html#about" class="mobile-link">About</a>
+            <a href="index.html#how-it-works" class="mobile-link">Process</a>
+            <a href="index.html#contact" class="mobile-link">Contact</a>
+            <a href="index.html#contact" class="btn-primary mobile-cta">Get a Quote</a>
+        </div>
+    </nav>
+
+
+    <!-- ==================== PORTFOLIO HERO ==================== -->
+    <section class="portfolio-hero">
+        <div class="container portfolio-hero-inner">
+            <span class="text-label">Our Work</span>
+            <h1>PROJECT <span class="text-accent">PORTFOLIO</span></h1>
+            <p>A curated selection of architectural drawing and CAD projects delivered for UK clients — from planning applications to building control packages.</p>
+        </div>
+    </section>
+
+
+
+
+    <!-- ==================== PORTFOLIO SECTION ==================== -->
+    <section style="background: var(--bg-primary); padding-bottom: 4rem;">
+        <div class="container">
+
+            <!-- Filter Bar -->
+            <div class="filter-bar" id="filter-bar">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="garage-conversion">Garage Conversion</button>
+                <button class="filter-btn" data-filter="loft-conversion">Loft Conversion</button>
+                <button class="filter-btn" data-filter="extensions">Extensions</button>
+                <button class="filter-btn" data-filter="new-build">New Build</button>
+                <button class="filter-btn" data-filter="outbuilding">Outbuilding</button>
+                <button class="filter-btn" data-filter="internal-changes">Internal Changes</button>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="portfolio-grid" id="portfolio-grid">
+
+                <!-- ── Garage Conversion 1 ── -->
+                <div class="pf-card" data-category="garage-conversion">
+                    <div class="pf-card-img">
+                        <img src="images/garage-conversion.png" alt="Integral Garage Conversion to Living Room">
+                        <span class="pf-badge approved">● APPROVED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Garage Conversion</div>
+                        <h2 class="pf-card-title">Integral Garage to Living Room</h2>
+                        <p class="pf-card-desc">Full conversion of a single integral garage into a habitable living room with WC. Included planning application drawings, structural details, and building control package.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Manchester, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Planning + BC</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">18 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Loft Conversion 1 ── -->
+                <div class="pf-card" data-category="loft-conversion">
+                    <div class="pf-card-img">
+                        <img src="images/loft-conversion.png" alt="Dormer Loft Conversion with En-Suite">
+                        <span class="pf-badge completed">● COMPLETED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Loft Conversion</div>
+                        <h2 class="pf-card-title">Dormer Loft — Master Bedroom + En-Suite</h2>
+                        <p class="pf-card-desc">Hip-to-gable loft conversion with rear dormer box and Velux windows to front. Full planning drawings, section details, elevations, and building regulations package.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Leeds, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Hip-to-Gable + Dormer</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">34 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Extensions 1 ── -->
+                <div class="pf-card" data-category="extensions">
+                    <div class="pf-card-img">
+                        <img src="images/extensions.png" alt="Single Storey Rear Extension">
+                        <span class="pf-badge approved">● APPROVED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Extensions</div>
+                        <h2 class="pf-card-title">Single Storey Rear Extension</h2>
+                        <p class="pf-card-desc">Contemporary flat-roof single storey rear extension with full-width bi-fold doors. Included site plan, floor plans, elevations, and planning application drawings.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Birmingham, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Planning Application</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">28 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── New Build 1 ── -->
+                <div class="pf-card" data-category="new-build">
+                    <div class="pf-card-img">
+                        <img src="images/new-build.png" alt="Detached New Build Residence">
+                        <span class="pf-badge progress">● IN PROGRESS</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">New Build</div>
+                        <h2 class="pf-card-title">4-Bed Detached New Build</h2>
+                        <p class="pf-card-desc">Full architectural package for a 4-bedroom detached house with double garage on a residential plot. Includes site plan, floor plans, elevations, sections, and planning submission pack.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Sheffield, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Full Arch. Package</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">185 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Outbuilding 1 ── -->
+                <div class="pf-card" data-category="outbuilding">
+                    <div class="pf-card-img">
+                        <img src="images/outbuilding.png" alt="Garden Room Home Office">
+                        <span class="pf-badge completed">● COMPLETED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Outbuilding</div>
+                        <h2 class="pf-card-title">Garden Room / Home Office Studio</h2>
+                        <p class="pf-card-desc">Detached single-storey garden room with kitchenette and WC. Permitted development application drawings including site plan, floor plan, elevations, and design statement.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">London, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Permitted Dev.</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">22 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Internal Changes 1 ── -->
+                <div class="pf-card" data-category="internal-changes">
+                    <div class="pf-card-img">
+                        <img src="images/internal-changes.png" alt="Open Plan Internal Reconfiguration">
+                        <span class="pf-badge approved">● APPROVED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Internal Changes</div>
+                        <h2 class="pf-card-title">Open-Plan Kitchen / Lounge Reconfiguration</h2>
+                        <p class="pf-card-desc">Removal of load-bearing wall between kitchen and lounge to create open-plan kitchen/diner. Full building control drawings including structural beam design and RSJ specification.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Bristol, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Building Control</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Beam</span>
+                                <span class="pf-meta-value">RSJ 152×89</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Garage Conversion 2 ── -->
+                <div class="pf-card" data-category="garage-conversion">
+                    <div class="pf-card-img">
+                        <img src="images/garage-conversion.png" alt="Double Garage Conversion">
+                        <span class="pf-badge approved">● APPROVED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Garage Conversion</div>
+                        <h2 class="pf-card-title">Double Garage to Annex Suite</h2>
+                        <p class="pf-card-desc">Conversion of a detached double garage into a self-contained annex with bedroom, bathroom, and kitchenette. Included change of use planning application and full building control package.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Surrey, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Planning + BC</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">42 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Loft Conversion 2 ── -->
+                <div class="pf-card" data-category="loft-conversion">
+                    <div class="pf-card-img">
+                        <img src="images/loft-conversion.png" alt="Mansard Loft Conversion">
+                        <span class="pf-badge approved">● APPROVED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Loft Conversion</div>
+                        <h2 class="pf-card-title">Mansard Loft — 2 Bedrooms + Bathroom</h2>
+                        <p class="pf-card-desc">Mansard loft conversion on a Victorian terraced house creating two bedrooms and a bathroom. Party wall award drawings, planning pack, and building regulations submission.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">London, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Type</span>
+                                <span class="pf-meta-value">Mansard</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">48 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Extensions 2 ── -->
+                <div class="pf-card" data-category="extensions">
+                    <div class="pf-card-img">
+                        <img src="images/extensions.png" alt="Two Storey Side Extension">
+                        <span class="pf-badge approved">● APPROVED</span>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="pf-tag">Extensions</div>
+                        <h2 class="pf-card-title">Two-Storey Side Extension</h2>
+                        <p class="pf-card-desc">Two-storey side extension adding a utility room and bedroom above. Planning drawings, elevations, sections, and full building regulations package including structural details.</p>
+                        <div class="pf-meta">
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Location</span>
+                                <span class="pf-meta-value">Nottingham, UK</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Package</span>
+                                <span class="pf-meta-value">Planning + BC</span>
+                            </div>
+                            <div class="pf-meta-item">
+                                <span class="pf-meta-label">Area</span>
+                                <span class="pf-meta-value">36 m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /portfolio-grid -->
+
+        </div>
+    </section>
+
+
+    <!-- ==================== CTA BANNER ==================== -->
+    <section style="background: var(--bg-primary); padding: 0 0 5rem;">
+        <div class="container">
+            <div class="pf-cta-banner">
+                <span class="text-label" style="display:block;margin-bottom:1rem;">Start Your Project</span>
+                <h2>READY TO <span class="text-accent">GET STARTED?</span></h2>
+                <p>Get accurate, council-ready architectural drawings delivered in 3–5 working days. Competitive pricing, expert service.</p>
+                <div class="cta-row">
+                    <a href="index.html#contact" class="btn-primary">
+                        <span>Get a Free Quote</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="index.html#services" class="btn-secondary">View Services</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer section-darker">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo footer-logo"><span class="logo-build">BUILD</span><span class="logo-cares">Cares</span></a>
+                    <p class="text-body footer-description">Freelance architectural design and CAD subcontractor delivering precision drawings for UK construction projects.</p>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:1rem;">
+                        <a href="https://wa.me/447586750755" target="_blank" rel="noopener noreferrer" class="footer-link" style="color:var(--accent-cyan);">📱 +44 7586 750755</a>
+                        <a href="mailto:anwar@buildcares.com" class="footer-link">✉️ anwar@buildcares.com</a>
+                    </div>
+                </div>
+
+                <div class="footer-links-group">
+                    <h4 class="footer-title text-mono">SERVICES</h4>
+                    <a href="portfolio.html?filter=garage-conversion" class="footer-link">Garage Conversion</a>
+                    <a href="portfolio.html?filter=loft-conversion" class="footer-link">Loft Conversion</a>
+                    <a href="portfolio.html?filter=extensions" class="footer-link">Extensions</a>
+                    <a href="portfolio.html?filter=new-build" class="footer-link">New Build</a>
+                    <a href="portfolio.html?filter=outbuilding" class="footer-link">Outbuilding</a>
+                    <a href="portfolio.html?filter=internal-changes" class="footer-link">Internal Changes</a>
+                </div>
+
+                <div class="footer-links-group">
+                    <h4 class="footer-title text-mono">QUICK LINKS</h4>
+                    <a href="index.html" class="footer-link">Home</a>
+                    <a href="portfolio.html" class="footer-link">Portfolio</a>
+                    <a href="index.html#about" class="footer-link">About</a>
+                    <a href="index.html#how-it-works" class="footer-link">Process</a>
+                    <a href="index.html#contact" class="footer-link">Contact</a>
+                </div>
+
+                <div class="footer-links-group">
+                    <h4 class="footer-title text-mono">DELIVERABLES</h4>
+                    <a href="index.html#deliver" class="footer-link">Planning Drawings</a>
+                    <a href="index.html#deliver" class="footer-link">Building Control</a>
+                    <a href="index.html#deliver" class="footer-link">3D Modelling</a>
+                    <a href="index.html#deliver" class="footer-link">Design Modifications</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-line"></div>
+                <div class="footer-bottom-content flex-between">
+                    <span class="text-mono text-dim">© 2026 BUILDCARES. ALL RIGHTS RESERVED.</span>
+                    <span class="text-mono text-dim">PRECISION DRAWINGS • UK STANDARDS • FAST DELIVERY</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script src="js/main.js?v=17" defer></script>
+    <script>
+        // ── Filter Logic ──
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.pf-card');
+        const grid = document.getElementById('portfolio-grid');
+
+        function applyFilter(filter) {
+            filterBtns.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+            let visible = 0;
+            cards.forEach(card => {
+                const show = filter === 'all' || card.dataset.category === filter;
+                card.style.display = show ? 'flex' : 'none';
+                if (show) visible++;
+            });
+
+            // If only 1 or 2 cards visible, let grid stretch naturally
+            if (visible === 1) {
+                grid.style.gridTemplateColumns = '1fr';
+            } else if (visible === 2) {
+                grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            } else {
+                grid.style.gridTemplateColumns = '';
+            }
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+        });
+
+        // ── URL Query Param filter (from service card links) ──
+        const params = new URLSearchParams(window.location.search);
+        const urlFilter = params.get('filter');
+        if (urlFilter) {
+            applyFilter(urlFilter);
+            // Scroll to filter bar smoothly
+            document.getElementById('filter-bar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ── Navbar scroll effect ──
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // ── Mobile menu toggle ──
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+            document.getElementById('mobile-menu')?.classList.toggle('open');
+        });
+
+        // ── Custom cursor ──
+        const cursor = document.getElementById('custom-cursor');
+        const coordX = document.querySelector('.coord-x');
+        const coordY = document.querySelector('.coord-y');
+        if (cursor) {
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top  = e.clientY + 'px';
+                if (coordX) coordX.textContent = 'X: ' + e.clientX.toFixed(0);
+                if (coordY) coordY.textContent = 'Y: ' + e.clientY.toFixed(0);
+            });
+            document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+            document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+        }
+    </script>
+
+</body>
+</html>
