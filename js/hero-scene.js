@@ -96,10 +96,16 @@
             window.addEventListener('resize', this.handleResize);
             document.addEventListener('mousemove', this.handleMouseMove);
 
-            // Pointer Drag Listeners for 360 House Rotation
+            // Pointer Drag Listeners for 360 House Rotation (UP, DOWN, LEFT, RIGHT)
+            const heroSec = document.getElementById('hero-section') || this.container;
+            if (heroSec) {
+                heroSec.style.cursor = 'grab';
+                heroSec.addEventListener('pointerdown', this.handlePointerDown);
+            }
             this.container.addEventListener('pointerdown', this.handlePointerDown);
             window.addEventListener('pointermove', this.handlePointerMove);
             window.addEventListener('pointerup', this.handlePointerUp);
+
 
             // Start Render Loop
             this.render();
@@ -588,9 +594,12 @@
         }
 
         handlePointerDown(event) {
+            // Ignore clicks on buttons/links
+            if (event.target.closest('a, button, input')) return;
             this.isDragging = true;
             this.previousPointerX = event.clientX;
             this.previousPointerY = event.clientY;
+            document.body.style.cursor = 'grabbing';
             if (this.container) this.container.style.cursor = 'grabbing';
         }
 
@@ -600,14 +609,12 @@
             const deltaX = event.clientX - this.previousPointerX;
             const deltaY = event.clientY - this.previousPointerY;
 
-            this.rotationVelocityY = deltaX * 0.008;
-            this.rotationVelocityX = deltaY * 0.004;
+            // Full 360 degree Y (horizontal yaw) and X (vertical pitch) rotation
+            this.rotationVelocityY = deltaX * 0.01;
+            this.rotationVelocityX = deltaY * 0.01;
 
             this.buildingGroup.rotation.y += this.rotationVelocityY;
             this.buildingGroup.rotation.x += this.rotationVelocityX;
-
-            // Clamp pitch tilt between -0.4 and 0.5 so house stays right side up
-            this.buildingGroup.rotation.x = Math.max(-0.4, Math.min(0.5, this.buildingGroup.rotation.x));
 
             this.previousPointerX = event.clientX;
             this.previousPointerY = event.clientY;
@@ -615,6 +622,7 @@
 
         handlePointerUp() {
             this.isDragging = false;
+            document.body.style.cursor = '';
             if (this.container) this.container.style.cursor = 'grab';
         }
 
@@ -623,23 +631,22 @@
             
             const time = this.clock.getElapsedTime();
 
-            // 360 Rotation & Inertia Damping Logic
+            // Unconstrained 360 Degree Rotation & Inertia Damping Logic
             if (this.buildingGroup) {
                 if (this.isDragging) {
-                    // Direct user drag control active
+                    // Direct 360 user drag active
                 } else if (Math.abs(this.rotationVelocityY) > 0.0001 || Math.abs(this.rotationVelocityX) > 0.0001) {
-                    // Smooth spin momentum damping
+                    // Smooth spin momentum damping in all directions (UP/DOWN/LEFT/RIGHT)
                     this.buildingGroup.rotation.y += this.rotationVelocityY;
                     this.buildingGroup.rotation.x += this.rotationVelocityX;
                     this.rotationVelocityY *= 0.95;
                     this.rotationVelocityX *= 0.95;
-                    this.buildingGroup.rotation.x += (0 - this.buildingGroup.rotation.x) * 0.02;
                 } else {
-                    // Gentle auto-rotation
-                    this.buildingGroup.rotation.y += 0.0015;
-                    this.buildingGroup.rotation.x += (0 - this.buildingGroup.rotation.x) * 0.05;
+                    // Gentle auto-spin around Y axis
+                    this.buildingGroup.rotation.y += 0.002;
                 }
             }
+
             
             // Idle Animation: Window pulsing
             if (this.windowMaterial) {
