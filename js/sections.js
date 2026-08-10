@@ -9,6 +9,7 @@ window.SectionAnimations = {
     this.initServices();
     this.initDeliver();
     this.initTransform();
+    this.initTransformInteractive();
     this.initPortfolio();
     this.initHowItWorks();
     this.initWhy();
@@ -258,5 +259,99 @@ window.SectionAnimations = {
       ease: 'sine.inOut',
       delay: 1
     });
+  },
+
+  initTransformInteractive: function() {
+    const container = document.getElementById('transform-3d-canvas') || document.getElementById('transform-3d');
+    const building = document.getElementById('isometric-building');
+    if (!container || !building) return;
+
+    let rotX = 55;
+    let rotZ = 0;
+    let scale = 1.0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    function applyTransform() {
+      building.style.animation = 'none'; // Disable CSS auto-spin keyframes on user interaction
+      building.style.transform = `scale(${scale}) rotateX(${rotX}deg) rotateZ(${rotZ}deg)`;
+      const scaleText = document.getElementById('iso-scale-text');
+      if (scaleText) scaleText.textContent = Math.round(scale * 100) + '%';
+    }
+
+    function resetView() {
+      rotX = 55;
+      rotZ = 0;
+      scale = 1.0;
+      applyTransform();
+    }
+
+    // Pointer Drag Rotation (360 degrees UP, DOWN, LEFT, RIGHT)
+    container.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button')) return;
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      container.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+
+      rotZ += deltaX * 0.6; // 360 degree horizontal rotation
+      rotX -= deltaY * 0.4; // 360 degree vertical tilt rotation
+
+      applyTransform();
+
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (isDragging) {
+        isDragging = false;
+        container.style.cursor = 'grab';
+      }
+    });
+
+    // Mouse Wheel Zoom In / Zoom Out
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        scale = Math.min(scale + 0.15, 2.5);
+      } else {
+        scale = Math.max(scale - 0.15, 0.6);
+      }
+      applyTransform();
+    }, { passive: false });
+
+    // Double Click to Toggle 1x / 1.8x Zoom
+    container.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      scale = scale > 1.2 ? 1.0 : 1.8;
+      applyTransform();
+    });
+
+    // Toolbar Buttons
+    document.getElementById('iso-zoom-in')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      scale = Math.min(scale + 0.25, 2.5);
+      applyTransform();
+    });
+
+    document.getElementById('iso-zoom-out')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      scale = Math.max(scale - 0.25, 0.6);
+      applyTransform();
+    });
+
+    document.getElementById('iso-reset-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetView();
+    });
   }
 };
+

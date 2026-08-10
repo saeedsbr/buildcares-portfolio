@@ -328,8 +328,18 @@
                 </div>
 
                 <div class="transform-3d" id="transform-3d">
-                    <div class="transform-label text-mono">3D VISUALISATION</div>
-                    <div id="transform-3d-canvas" class="transform-3d-container">
+                    <div class="transform-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;z-index:20;position:relative;">
+                        <div class="transform-label text-mono" style="margin:0;">3D VISUALISATION • 360° INTERACTIVE</div>
+                        
+                        <!-- 3D Interactive Control Buttons -->
+                        <div class="iso-controls" style="display:flex;align-items:center;gap:0.4rem;background:rgba(15,23,42,0.85);padding:0.25rem 0.5rem;border:1px solid var(--accent-cyan);border-radius:4px;backdrop-filter:blur(5px);">
+                            <button id="iso-zoom-out" style="font-family:var(--font-mono);background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;padding:0.1rem 0.4rem;" title="Zoom Out (-)">🔍-</button>
+                            <span id="iso-scale-text" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent-cyan);min-width:40px;text-align:center;">100%</span>
+                            <button id="iso-zoom-in" style="font-family:var(--font-mono);background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;padding:0.1rem 0.4rem;" title="Zoom In (+)">🔍+</button>
+                            <button id="iso-reset-btn" style="font-family:var(--font-mono);background:rgba(0,229,255,0.2);border:1px solid var(--accent-cyan);color:#fff;font-size:0.65rem;cursor:pointer;padding:0.2rem 0.4rem;border-radius:3px;" title="Reset View">🔄 Reset</button>
+                        </div>
+                    </div>
+                    <div id="transform-3d-canvas" class="transform-3d-container" style="cursor:grab;position:relative;">
                         <div class="isometric-building" id="isometric-building">
                             <!-- ══ GROUND BASE PLATE ══ -->
                             <div class="building-face iso-floor"></div>
@@ -705,7 +715,7 @@
     <script src="js/floor-plan.js?v=20" defer></script>
     <script src="js/hero-scene.js?v=30" defer></script>
     <script src="js/cad-background.js?v=17" defer></script>
-    <script src="js/sections.js?v=21" defer></script>
+    <script src="js/sections.js?v=30" defer></script>
     <script src="js/main.js?v=17" defer></script>
 
 </body>
