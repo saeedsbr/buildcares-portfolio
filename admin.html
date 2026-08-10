@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuildCares — Admin Control Center</title>
+    <link rel="icon" type="image/jpeg" href="https://buildcares.subthings.com/images/logo.jpeg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="css/style.css?v=21">
+
+    <style>
+        :root {
+            --admin-accent: #00e5ff;
+            --admin-bg-dark: #0a0e17;
+            --admin-card-bg: #111827;
+            --admin-border: rgba(0, 229, 255, 0.15);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ── Login Overlay ── */
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-card);
+            border: 1px solid var(--admin-border);
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header .nav-logo {
+            font-size: 1.8rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: border-color 0.25s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+        }
+
+        .login-hint {
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px dashed var(--admin-border);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        /* ── Admin Dashboard ── */
+        .admin-dashboard {
+            display: none; /* Shown after login */
+            min-height: 100vh;
+        }
+
+        .admin-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--line-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 229, 255, 0.08);
+        }
+
+        .admin-body {
+            padding: 2.5rem 0 5rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--line-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .panel-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        /* Project Table / List */
+        .project-item-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            padding: 1.25rem;
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            transition: border-color 0.25s ease;
+        }
+
+        .project-item-card:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .project-thumb {
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+            border: 1px solid var(--line-color);
+            background: #000;
+        }
+
+        .project-details {
+            flex: 1;
+        }
+
+        .project-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .project-item-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .item-badge {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .project-item-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .project-item-meta {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .btn-sm:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .btn-danger {
+            color: #ff4c4c;
+        }
+
+        .btn-danger:hover {
+            border-color: #ff4c4c;
+            background: rgba(255, 76, 76, 0.1);
+        }
+
+        .alert-box {
+            padding: 0.75rem 1rem;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .project-item-card { flex-direction: column; align-items: flex-start; }
+            .project-thumb { width: 100%; height: 160px; }
+            .admin-header-flex { flex-direction: column; gap: 1rem; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== LOGIN SECTION ==================== -->
+    <div id="login-view" class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-build">BUILD</span><span class="logo-cares">Cares</span>
+                </a>
+                <div class="login-title">ADMIN CONTROL CENTER</div>
+            </div>
+
+            <div id="login-alert" class="alert-box" style="background:rgba(255,76,76,0.1);border-color:#ff4c4c;color:#ff4c4c;">
+                Invalid credentials. Please check email & password.
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Admin Email</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="admin@buildcares.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary btn-full">
+                    <span>LOGIN TO DASHBOARD</span>
+                </button>
+            </form>
+
+            <div class="login-hint">
+                💡 Default Credentials: <strong>admin@buildcares.com</strong> / <strong>admin123</strong><br>
+                (You can change email & password anytime inside Settings)
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== DASHBOARD VIEW ==================== -->
+    <div id="dashboard-view" class="admin-dashboard">
+
+        <!-- Admin Navbar -->
+        <header class="admin-nav">
+            <div class="container admin-header-flex">
+                <div style="display:flex;align-items:center;gap:1.5rem;">
+                    <a href="index.html" class="nav-logo" style="font-size:1.2rem;">
+                        <span class="logo-build">BUILD</span><span class="logo-cares">Cares</span>
+                        <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--accent-cyan);margin-left:0.5rem;">[ADMIN]</span>
+                    </a>
+                </div>
+
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="tab-projects">📂 Manage Projects</button>
+                    <button class="tab-btn" data-tab="tab-settings">⚙️ Site Settings & Info</button>
+                    <button class="tab-btn" data-tab="tab-account">🔒 Security & Password</button>
+                </div>
+
+                <div>
+                    <a href="index.html" target="_blank" class="btn-sm" style="margin-right:0.5rem;">👁️ View Live Site</a>
+                    <button id="logout-btn" class="btn-sm btn-danger">Log Out</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Body -->
+        <main class="admin-body">
+            <div class="container">
+
+                <div id="save-alert" class="alert-box">
+                    ✅ Changes saved successfully! Updated across your live website.
+                </div>
+
+                <!-- ── TAB 1: PROJECTS MANAGER ── -->
+                <section id="tab-projects" class="tab-content active">
+
+                    <!-- Add Project Form -->
+                    <div class="panel-card">
+                        <div class="panel-title">Add New Project</div>
+                        <div class="panel-subtitle">Create a project to display in the Portfolio page and Services showcases.</div>
+
+                        <form id="add-project-form">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-title">Project Title</label>
+                                    <input type="text" id="proj-title" class="form-input" placeholder="e.g. Modern Rear Extension & Kitchen" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-category">Service Category</label>
+                                    <select id="proj-category" class="form-select" required>
+                                        <option value="garage-conversion">Garage Conversion</option>
+                                        <option value="loft-conversion">Loft Conversion</option>
+                                        <option value="extensions">Extensions</option>
+                                        <option value="new-build">New Build</option>
+                                        <option value="outbuilding">Outbuilding</option>
+                                        <option value="internal-changes">Internal Changes</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-status">Approval Status</label>
+                                    <select id="proj-status" class="form-select">
+                                        <option value="approved">● APPROVED</option>
+                                        <option value="completed">● COMPLETED</option>
+                                        <option value="progress">● IN PROGRESS</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-location">Location</label>
+                                    <input type="text" id="proj-location" class="form-input" placeholder="e.g. Manchester, UK" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-area">Floor Area (m²)</label>
+                                    <input type="text" id="proj-area" class="form-input" placeholder="e.g. 24 m²" required>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-image">Image URL / Select Preset</label>
+                                    <select id="proj-image-preset" class="form-select" style="margin-bottom:0.5rem;" onchange="document.getElementById('proj-image').value=this.value;">
+                                        <option value="images/extensions.png">Preset: Extensions Visualisation</option>
+                                        <option value="images/garage-conversion.png">Preset: Garage Conversion Visualisation</option>
+                                        <option value="images/loft-conversion.png">Preset: Loft Conversion Visualisation</option>
+                                        <option value="images/new-build.png">Preset: New Build Visualisation</option>
+                                        <option value="images/outbuilding.png">Preset: Outbuilding Visualisation</option>
+                                        <option value="images/internal-changes.png">Preset: Internal Changes Visualisation</option>
+                                    </select>
+                                    <input type="text" id="proj-image" class="form-input" value="images/extensions.png" placeholder="Custom image URL" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="proj-package">Package Type</label>
+                                    <input type="text" id="proj-package" class="form-input" placeholder="e.g. Planning + Building Control" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="proj-desc">Project Description</label>
+                                <textarea id="proj-desc" class="form-textarea" rows="3" placeholder="Describe the scope of drawings, planning permissions, or architectural features..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="margin-top:0.5rem;">
+                                <span>➕ ADD PROJECT TO PORTFOLIO</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Existing Projects List -->
+                    <div class="panel-card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                            <div>
+                                <div class="panel-title" style="margin:0;">Existing Portfolio Projects</div>
+                                <div class="panel-subtitle" style="margin:0;">Manage, edit, or delete live portfolio items.</div>
+                            </div>
+                            <button id="reset-projects-btn" class="btn-sm">Reset to Sample Projects</button>
+                        </div>
+
+                        <div id="projects-list-container">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ── TAB 2: SITE SETTINGS & CONTACT ── -->
+                <section id="tab-settings" class="tab-content">
+                    <div class="panel-card">
+                        <div class="panel-title">Business Information & Contact Details</div>
+                        <div class="panel-subtitle">Update phone number, email, hours, and company information across your entire website.</div>
+
+                        <form id="settings-form">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="cfg-phone">Phone Number (Display)</label>
+                                    <input type="text" id="cfg-phone" class="form-input" value="+44 7586 750755" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cfg-whatsapp">WhatsApp Number (For Link, Digits Only with country code)</label>
+                                    <input type="text" id="cfg-whatsapp" class="form-input" value="447586750755" placeholder="e.g. 447586750755" required>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="cfg-email">Contact Email Address</label>
+                                    <input type="email" id="cfg-email" class="form-input" value="anwar@buildcares.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cfg-turnaround">Delivery Turnaround Time</label>
+                                    <input type="text" id="cfg-turnaround" class="form-input" value="3–5 Working Days" required>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="cfg-hours">Business Working Hours</label>
+                                    <input type="text" id="cfg-hours" class="form-input" value="Mon–Sun 9AM–10PM" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cfg-tagline">Company Hero Tagline</label>
+                                    <input type="text" id="cfg-tagline" class="form-input" value="Thoughtful Design, Lasting Care" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="margin-top:0.5rem;">
+                                <span>💾 SAVE SITE SETTINGS</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+
+                <!-- ── TAB 3: ACCOUNT & SECURITY ── -->
+                <section id="tab-account" class="tab-content">
+                    <div class="panel-card" style="max-width:540px;">
+                        <div class="panel-title">Change Admin Login Credentials</div>
+                        <div class="panel-subtitle">Update your admin login email address and password.</div>
+
+                        <form id="account-form">
+                            <div class="form-group">
+                                <label class="form-label" for="acc-email">Admin Login Email</label>
+                                <input type="email" id="acc-email" class="form-input" value="admin@buildcares.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="acc-old-pass">Current Password</label>
+                                <input type="password" id="acc-old-pass" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="acc-new-pass">New Password</label>
+                                <input type="password" id="acc-new-pass" class="form-input" placeholder="Min 6 characters" required>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <span>UPDATE CREDENTIALS</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== SCRIPT ==================== -->
+    <script>
+        // ── DEFAULT DATA SYSTEM ──
+        const DEFAULT_AUTH = {
+            email: 'admin@buildcares.com',
+            password: 'admin123'
+        };
+
+        const DEFAULT_CONFIG = {
+            phone: '+44 7586 750755',
+            whatsapp: '447586750755',
+            email: 'anwar@buildcares.com',
+            turnaround: '3–5 Working Days',
+            hours: 'Mon–Sun 9AM–10PM',
+            tagline: 'Thoughtful Design, Lasting Care'
+        };
+
+        const SAMPLE_PROJECTS = [
+            {
+                id: '1',
+                title: 'Integral Garage to Living Room',
+                category: 'garage-conversion',
+                status: 'approved',
+                location: 'Manchester, UK',
+                area: '18 m²',
+                package: 'Planning + Building Control',
+                image: 'images/garage-conversion.png',
+                desc: 'Full conversion of a single integral garage into a habitable living room with WC. Included planning application drawings, structural details, and building control package.'
+            },
+            {
+                id: '2',
+                title: 'Dormer Loft — Master Bedroom + En-Suite',
+                category: 'loft-conversion',
+                status: 'completed',
+                location: 'Leeds, UK',
+                area: '34 m²',
+                package: 'Hip-to-Gable + Dormer',
+                image: 'images/loft-conversion.png',
+                desc: 'Hip-to-gable loft conversion with rear dormer box and Velux windows to front. Full planning drawings, section details, elevations, and building regulations package.'
+            },
+            {
+                id: '3',
+                title: 'Single Storey Rear Extension',
+                category: 'extensions',
+                status: 'approved',
+                location: 'Birmingham, UK',
+                area: '28 m²',
+                package: 'Planning Application',
+                image: 'images/extensions.png',
+                desc: 'Contemporary flat-roof single storey rear extension with full-width bi-fold doors. Included site plan, floor plans, elevations, and planning application drawings.'
+            },
+            {
+                id: '4',
+                title: '4-Bed Detached New Build',
+                category: 'new-build',
+                status: 'progress',
+                location: 'Sheffield, UK',
+                area: '185 m²',
+                package: 'Full Arch. Package',
+                image: 'images/new-build.png',
+                desc: 'Full architectural package for a 4-bedroom detached house with double garage on a residential plot. Includes site plan, floor plans, elevations, sections, and planning submission pack.'
+            },
+            {
+                id: '5',
+                title: 'Garden Room / Home Office Studio',
+                category: 'outbuilding',
+                status: 'completed',
+                location: 'London, UK',
+                area: '22 m²',
+                package: 'Permitted Dev.',
+                image: 'images/outbuilding.png',
+                desc: 'Detached single-storey garden room with kitchenette and WC. Permitted development application drawings including site plan, floor plan, elevations, and design statement.'
+            },
+            {
+                id: '6',
+                title: 'Open-Plan Kitchen / Lounge Reconfiguration',
+                category: 'internal-changes',
+                status: 'approved',
+                location: 'Bristol, UK',
+                area: 'RSJ 152×89',
+                package: 'Building Control',
+                image: 'images/internal-changes.png',
+                desc: 'Removal of load-bearing wall between kitchen and lounge to create open-plan kitchen/diner. Full building control drawings including structural beam design and RSJ specification.'
+            }
+        ];
+
+        // ── STORAGE UTILITIES ──
+        function getAuth() {
+            const data = localStorage.getItem('buildcares_auth');
+            return data ? JSON.parse(data) : DEFAULT_AUTH;
+        }
+
+        function getConfig() {
+            const data = localStorage.getItem('buildcares_config');
+            return data ? JSON.parse(data) : DEFAULT_CONFIG;
+        }
+
+        function getProjects() {
+            const data = localStorage.getItem('buildcares_projects');
+            return data ? JSON.parse(data) : SAMPLE_PROJECTS;
+        }
+
+        function saveProjects(arr) {
+            localStorage.setItem('buildcares_projects', JSON.stringify(arr));
+        }
+
+        function saveConfig(cfg) {
+            localStorage.setItem('buildcares_config', JSON.stringify(cfg));
+        }
+
+        function saveAuth(auth) {
+            localStorage.setItem('buildcares_auth', JSON.stringify(auth));
+        }
+
+        function showAlert(msg) {
+            const box = document.getElementById('save-alert');
+            box.textContent = msg || '✅ Changes saved successfully!';
+            box.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => { box.style.display = 'none'; }, 4000);
+        }
+
+        // ── AUTH CHECK & LOGIN ──
+        let isLoggedIn = sessionStorage.getItem('buildcares_session') === 'true';
+
+        function renderView() {
+            const loginView = document.getElementById('login-view');
+            const dashView = document.getElementById('dashboard-view');
+            if (isLoggedIn) {
+                loginView.style.display = 'none';
+                dashView.style.display = 'block';
+                loadSettingsToForm();
+                loadProjectsList();
+            } else {
+                loginView.style.display = 'flex';
+                dashView.style.display = 'none';
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+            const auth = getAuth();
+
+            if (email.toLowerCase() === auth.email.toLowerCase() && pass === auth.password) {
+                isLoggedIn = true;
+                sessionStorage.setItem('buildcares_session', 'true');
+                document.getElementById('login-alert').style.display = 'none';
+                renderView();
+            } else {
+                document.getElementById('login-alert').style.display = 'block';
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            isLoggedIn = false;
+            sessionStorage.removeItem('buildcares_session');
+            renderView();
+        });
+
+        // ── TABS LOGIC ──
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ── PROJECTS MANAGER ──
+        function loadProjectsList() {
+            const container = document.getElementById('projects-list-container');
+            const projects = getProjects();
+
+            if (projects.length === 0) {
+                container.innerHTML = '<div style="font-family:var(--font-mono);color:var(--text-dim);padding:2rem;text-align:center;">No projects added yet. Use the form above to add your first project!</div>';
+                return;
+            }
+
+            container.innerHTML = projects.map(p => `
+                <div class="project-item-card" id="p-item-${p.id}">
+                    <img src="${p.image}" alt="${p.title}" class="project-thumb">
+                    <div class="project-details">
+                        <div class="project-title-row">
+                            <span class="project-item-title">${p.title}</span>
+                            <span class="item-badge">${p.category.toUpperCase()}</span>
+                            <span class="item-badge" style="border-color:#22c55e;color:#22c55e;">${(p.status || 'approved').toUpperCase()}</span>
+                        </div>
+                        <div class="project-item-desc">${p.desc}</div>
+                        <div class="project-item-meta">📍 ${p.location} • 📐 ${p.area} • 📋 ${p.package}</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-sm btn-danger" onclick="deleteProject('${p.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('add-project-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const projects = getProjects();
+            const newProj = {
+                id: Date.now().toString(),
+                title: document.getElementById('proj-title').value.trim(),
+                category: document.getElementById('proj-category').value,
+                status: document.getElementById('proj-status').value,
+                location: document.getElementById('proj-location').value.trim(),
+                area: document.getElementById('proj-area').value.trim(),
+                package: document.getElementById('proj-package').value.trim(),
+                image: document.getElementById('proj-image').value.trim(),
+                desc: document.getElementById('proj-desc').value.trim()
+            };
+
+            projects.unshift(newProj); // Add to top
+            saveProjects(projects);
+            loadProjectsList();
+            document.getElementById('add-project-form').reset();
+            showAlert('✅ Project added to Portfolio successfully!');
+        });
+
+        function deleteProject(id) {
+            if (!confirm('Are you sure you want to delete this project?')) return;
+            let projects = getProjects();
+            projects = projects.filter(p => p.id !== id);
+            saveProjects(projects);
+            loadProjectsList();
+            showAlert('🗑️ Project deleted successfully.');
+        }
+
+        document.getElementById('reset-projects-btn').addEventListener('click', () => {
+            if (!confirm('Reset all projects back to original samples?')) return;
+            saveProjects(SAMPLE_PROJECTS);
+            loadProjectsList();
+            showAlert('🔄 Projects reset to default sample set.');
+        });
+
+        // ── SETTINGS MANAGER ──
+        function loadSettingsToForm() {
+            const cfg = getConfig();
+            const auth = getAuth();
+            document.getElementById('cfg-phone').value = cfg.phone || DEFAULT_CONFIG.phone;
+            document.getElementById('cfg-whatsapp').value = cfg.whatsapp || DEFAULT_CONFIG.whatsapp;
+            document.getElementById('cfg-email').value = cfg.email || DEFAULT_CONFIG.email;
+            document.getElementById('cfg-turnaround').value = cfg.turnaround || DEFAULT_CONFIG.turnaround;
+            document.getElementById('cfg-hours').value = cfg.hours || DEFAULT_CONFIG.hours;
+            document.getElementById('cfg-tagline').value = cfg.tagline || DEFAULT_CONFIG.tagline;
+
+            document.getElementById('acc-email').value = auth.email;
+        }
+
+        document.getElementById('settings-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const cfg = {
+                phone: document.getElementById('cfg-phone').value.trim(),
+                whatsapp: document.getElementById('cfg-whatsapp').value.trim(),
+                email: document.getElementById('cfg-email').value.trim(),
+                turnaround: document.getElementById('cfg-turnaround').value.trim(),
+                hours: document.getElementById('cfg-hours').value.trim(),
+                tagline: document.getElementById('cfg-tagline').value.trim()
+            };
+            saveConfig(cfg);
+            showAlert('💾 Site contact & settings updated!');
+        });
+
+        // ── ACCOUNT SECURITY ──
+        document.getElementById('account-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const auth = getAuth();
+            const oldPass = document.getElementById('acc-old-pass').value;
+            const newEmail = document.getElementById('acc-email').value.trim();
+            const newPass = document.getElementById('acc-new-pass').value;
+
+            if (oldPass !== auth.password) {
+                alert('Current password is incorrect.');
+                return;
+            }
+
+            if (newPass.length < 4) {
+                alert('Password must be at least 4 characters.');
+                return;
+            }
+
+            saveAuth({ email: newEmail, password: newPass });
+            document.getElementById('acc-old-pass').value = '';
+            document.getElementById('acc-new-pass').value = '';
+            showAlert('🔒 Admin credentials updated successfully! Use your new password on next login.');
+        });
+
+        // Initialize view
+        renderView();
+    </script>
+</body>
+</html>

@@ -95,9 +95,32 @@ const App = {
       
       // 10. Editor toolbar interactions
       this.initEditorToolbar();
+    
+      // 11. Dynamic site config sync from admin
+      this.syncAdminConfig();
     });
   },
   
+  syncAdminConfig: function() {
+    const rawConfig = localStorage.getItem('buildcares_config');
+    if (!rawConfig) return;
+    try {
+      const cfg = JSON.parse(rawConfig);
+      if (cfg.phone) {
+        document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+          a.href = `https://wa.me/${cfg.whatsapp || '447586750755'}`;
+          if (a.textContent.includes('📱')) a.textContent = `📱 ${cfg.phone}`;
+        });
+      }
+      if (cfg.email) {
+        document.querySelectorAll('a[href*="mailto:"]').forEach(a => {
+          a.href = `mailto:${cfg.email}`;
+          if (a.textContent.includes('✉️')) a.textContent = `✉️ ${cfg.email}`;
+        });
+      }
+    } catch(e) {}
+  },
+
   // ── Custom Cursor ──────────────────────────────────────────
   initCustomCursor: function() {
     this.cursor = document.getElementById('custom-cursor');

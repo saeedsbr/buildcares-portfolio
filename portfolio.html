@@ -714,7 +714,7 @@
                 <div class="footer-bottom-line"></div>
                 <div class="footer-bottom-content flex-between">
                     <span class="text-mono text-dim">© 2026 BUILDCARES. ALL RIGHTS RESERVED.</span>
-                    <span class="text-mono text-dim">PRECISION DRAWINGS • UK STANDARDS • FAST DELIVERY</span>
+                    <span class="text-mono text-dim">PRECISION DRAWINGS • UK STANDARDS • <a href="admin.html" style="color:var(--text-dim);text-decoration:underline;">ADMIN LOGIN</a></span>
                 </div>
             </div>
         </div>
@@ -724,12 +724,59 @@
     <!-- ==================== SCRIPTS ==================== -->
     <script src="js/main.js?v=17" defer></script>
     <script>
+        // ── Dynamic Data Sync from Admin (localStorage) ──
+        function renderDynamicProjects() {
+            const rawProjects = localStorage.getItem('buildcares_projects');
+            if (!rawProjects) return; // Keep static HTML fallback if not set
+            try {
+                const projects = JSON.parse(rawProjects);
+                const grid = document.getElementById('portfolio-grid');
+                if (!grid || projects.length === 0) return;
+
+                grid.innerHTML = projects.map(p => {
+                    const statusClass = p.status || 'approved';
+                    const statusText = statusClass === 'approved' ? '● APPROVED' : (statusClass === 'completed' ? '● COMPLETED' : '● IN PROGRESS');
+                    const categoryLabel = p.category.replace('-', ' ').toUpperCase();
+                    return `
+                        <div class="pf-card" data-category="${p.category}">
+                            <div class="pf-card-img">
+                                <img src="${p.image}" alt="${p.title}">
+                                <span class="pf-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="pf-card-body">
+                                <div class="pf-tag">${categoryLabel}</div>
+                                <h2 class="pf-card-title">${p.title}</h2>
+                                <p class="pf-card-desc">${p.desc}</p>
+                                <div class="pf-meta">
+                                    <div class="pf-meta-item">
+                                        <span class="pf-meta-label">Location</span>
+                                        <span class="pf-meta-value">${p.location}</span>
+                                    </div>
+                                    <div class="pf-meta-item">
+                                        <span class="pf-meta-label">Package</span>
+                                        <span class="pf-meta-value">${p.package}</span>
+                                    </div>
+                                    <div class="pf-meta-item">
+                                        <span class="pf-meta-label">Area/Spec</span>
+                                        <span class="pf-meta-value">${p.area}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) { console.error('Error rendering dynamic projects', e); }
+        }
+
+        renderDynamicProjects();
+
         // ── Filter Logic ──
         const filterBtns = document.querySelectorAll('.filter-btn');
-        const cards = document.querySelectorAll('.pf-card');
+        let cards = document.querySelectorAll('.pf-card');
         const grid = document.getElementById('portfolio-grid');
 
         function applyFilter(filter) {
+            cards = document.querySelectorAll('.pf-card');
             filterBtns.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
             let visible = 0;
             cards.forEach(card => {
@@ -738,7 +785,6 @@
                 if (show) visible++;
             });
 
-            // If only 1 or 2 cards visible, let grid stretch naturally
             if (visible === 1) {
                 grid.style.gridTemplateColumns = '1fr';
             } else if (visible === 2) {
@@ -752,18 +798,37 @@
             btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
         });
 
-        // ── URL Query Param filter (from service card links) ──
+        // ── URL Query Param filter ──
         const params = new URLSearchParams(window.location.search);
         const urlFilter = params.get('filter');
         if (urlFilter) {
             applyFilter(urlFilter);
-            // Scroll to filter bar smoothly
-            document.getElementById('filter-bar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('filter-bar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ── Dynamic Site Config Sync ──
+        const rawConfig = localStorage.getItem('buildcares_config');
+        if (rawConfig) {
+            try {
+                const cfg = JSON.parse(rawConfig);
+                if (cfg.phone) {
+                    document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+                        a.href = `https://wa.me/${cfg.whatsapp || '447586750755'}`;
+                        if (a.textContent.includes('📱')) a.textContent = `📱 ${cfg.phone}`;
+                    });
+                }
+                if (cfg.email) {
+                    document.querySelectorAll('a[href*="mailto:"]').forEach(a => {
+                        a.href = `mailto:${cfg.email}`;
+                        if (a.textContent.includes('✉️')) a.textContent = `✉️ ${cfg.email}`;
+                    });
+                }
+            } catch(e){}
         }
 
         // ── Navbar scroll effect ──
         window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+            document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 50);
         });
 
         // ── Mobile menu toggle ──
@@ -786,6 +851,7 @@
             document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
         }
     </script>
+
 
 </body>
 </html>
