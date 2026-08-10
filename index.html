@@ -98,7 +98,14 @@
                 <text x="60" y="50" fill="#00e5ff" font-family="JetBrains Mono" font-size="9">BUILDCARES // ARCHITECTURAL SERVICES</text>
                 <text x="60" y="65" fill="#8b95a5" font-family="JetBrains Mono" font-size="8">SCALE: 1:100 | UK STANDARDS</text>
             </g>
-        </svg>
+        <!-- Hero 3D Interactive Control Floating Toolbar -->
+        <div style="position:absolute;top:5.5rem;right:2rem;z-index:20;display:flex;align-items:center;gap:0.4rem;background:rgba(15,23,42,0.85);padding:0.35rem 0.6rem;border:1px solid var(--accent-cyan);border-radius:4px;backdrop-filter:blur(10px);box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent-cyan);margin-right:0.3rem;letter-spacing:0.05em;">3D HERO MODEL</span>
+            <button onclick="window.HeroScene && window.HeroScene.zoomOut()" style="font-family:var(--font-mono);background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;padding:0.1rem 0.4rem;" title="Zoom Out (Scroll Wheel / -)">🔍-</button>
+            <span id="hero-zoom-text" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent-cyan);min-width:40px;text-align:center;">100%</span>
+            <button onclick="window.HeroScene && window.HeroScene.zoomIn()" style="font-family:var(--font-mono);background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;padding:0.1rem 0.4rem;" title="Zoom In (Scroll Wheel / +)">🔍+</button>
+            <button onclick="window.HeroScene && window.HeroScene.resetZoom()" style="font-family:var(--font-mono);background:rgba(0,229,255,0.2);border:1px solid var(--accent-cyan);color:#fff;font-size:0.65rem;cursor:pointer;padding:0.2rem 0.4rem;border-radius:3px;" title="Reset View">🔄 Reset</button>
+        </div>
 
         <div class="hero-content container">
             <div class="hero-text">
@@ -713,7 +720,7 @@
 
     <!-- ==================== SCRIPTS ==================== -->
     <script src="js/floor-plan.js?v=20" defer></script>
-    <script src="js/hero-scene.js?v=30" defer></script>
+    <script src="js/hero-scene.js?v=35" defer></script>
     <script src="js/cad-background.js?v=17" defer></script>
     <script src="js/sections.js?v=30" defer></script>
     <script src="js/main.js?v=17" defer></script>

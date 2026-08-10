@@ -33,14 +33,18 @@
             this.handlePointerDown = this.handlePointerDown.bind(this);
             this.handlePointerMove = this.handlePointerMove.bind(this);
             this.handlePointerUp = this.handlePointerUp.bind(this);
+            this.handleWheel = this.handleWheel.bind(this);
+            this.handleDblClick = this.handleDblClick.bind(this);
             this.render = this.render.bind(this);
 
-            // Drag Rotation State
+            // Drag Rotation & Zoom State
             this.isDragging = false;
             this.previousPointerX = 0;
             this.previousPointerY = 0;
             this.rotationVelocityX = 0;
             this.rotationVelocityY = 0;
+            this.zoomLevel = 1.0;
+            this.targetZoom = 1.0;
         }
 
         init(containerId) {
@@ -96,15 +100,21 @@
             window.addEventListener('resize', this.handleResize);
             document.addEventListener('mousemove', this.handleMouseMove);
 
-            // Pointer Drag Listeners for 360 House Rotation (UP, DOWN, LEFT, RIGHT)
+            // Pointer Drag & Zoom Listeners
             const heroSec = document.getElementById('hero-section') || this.container;
             if (heroSec) {
                 heroSec.style.cursor = 'grab';
                 heroSec.addEventListener('pointerdown', this.handlePointerDown);
+                heroSec.addEventListener('wheel', this.handleWheel, { passive: false });
+                heroSec.addEventListener('dblclick', this.handleDblClick);
             }
             this.container.addEventListener('pointerdown', this.handlePointerDown);
+            this.container.addEventListener('wheel', this.handleWheel, { passive: false });
+            this.container.addEventListener('dblclick', this.handleDblClick);
+
             window.addEventListener('pointermove', this.handlePointerMove);
             window.addEventListener('pointerup', this.handlePointerUp);
+
 
 
             // Start Render Loop
@@ -626,6 +636,45 @@
             if (this.container) this.container.style.cursor = 'grab';
         }
 
+        handleWheel(event) {
+            event.preventDefault();
+            if (event.deltaY < 0) {
+                this.targetZoom = Math.min(this.targetZoom + 0.15, 2.5);
+            } else {
+                this.targetZoom = Math.max(this.targetZoom - 0.15, 0.5);
+            }
+            const heroZoomText = document.getElementById('hero-zoom-text');
+            if (heroZoomText) heroZoomText.textContent = Math.round(this.targetZoom * 100) + '%';
+        }
+
+        handleDblClick(event) {
+            if (event.target.closest('a, button')) return;
+            this.targetZoom = this.targetZoom > 1.2 ? 1.0 : 1.8;
+            const heroZoomText = document.getElementById('hero-zoom-text');
+            if (heroZoomText) heroZoomText.textContent = Math.round(this.targetZoom * 100) + '%';
+        }
+
+        zoomIn() {
+            this.targetZoom = Math.min(this.targetZoom + 0.25, 2.5);
+            const heroZoomText = document.getElementById('hero-zoom-text');
+            if (heroZoomText) heroZoomText.textContent = Math.round(this.targetZoom * 100) + '%';
+        }
+
+        zoomOut() {
+            this.targetZoom = Math.max(this.targetZoom - 0.25, 0.5);
+            const heroZoomText = document.getElementById('hero-zoom-text');
+            if (heroZoomText) heroZoomText.textContent = Math.round(this.targetZoom * 100) + '%';
+        }
+
+        resetZoom() {
+            this.targetZoom = 1.0;
+            if (this.buildingGroup) {
+                this.buildingGroup.rotation.set(0, 0, 0);
+            }
+            const heroZoomText = document.getElementById('hero-zoom-text');
+            if (heroZoomText) heroZoomText.textContent = '100%';
+        }
+
         render() {
             this.animationFrameId = requestAnimationFrame(this.render);
             
@@ -669,13 +718,20 @@
                 this.particles.geometry.attributes.position.needsUpdate = true;
             }
 
-            // Camera Parallax Interaction
-            this.camera.position.x += (15 + this.targetX - this.camera.position.x) * 0.05;
-            this.camera.position.y += (12 + this.targetY - this.camera.position.y) * 0.05;
+            // Smooth Camera Zoom & Parallax Interaction
+            this.zoomLevel += (this.targetZoom - this.zoomLevel) * 0.1;
+            const baseDistX = 15 / this.zoomLevel;
+            const baseDistY = 12 / this.zoomLevel;
+            const baseDistZ = 15 / this.zoomLevel;
+
+            this.camera.position.x += (baseDistX + this.targetX - this.camera.position.x) * 0.08;
+            this.camera.position.y += (baseDistY + this.targetY - this.camera.position.y) * 0.08;
+            this.camera.position.z += (baseDistZ - this.camera.position.z) * 0.08;
             this.camera.lookAt(0, 0, 0);
 
             this.renderer.render(this.scene, this.camera);
         }
+
 
 
         dispose() {
