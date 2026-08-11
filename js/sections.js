@@ -163,36 +163,35 @@ window.SectionAnimations = {
     const section = document.querySelector('#how-it-works');
     if (!section) return;
 
+    const timelineLine = document.querySelector('#timeline-line');
     const steps = section.querySelectorAll('.timeline-step');
     
-    // Animate timeline line
-    gsap.to('#timeline-line', {
-      width: '100%',
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 60%',
-        end: 'bottom 70%',
-        scrub: 0.5
-      }
-    });
-
-    // Step animations
-    steps.forEach((step) => {
-      gsap.fromTo(step, 
-        { y: 30, opacity: 0 },
+    if (timelineLine) {
+      gsap.fromTo(timelineLine, 
+        { width: '0%' },
         {
-          y: 0, opacity: 1, duration: 0.6, ease: 'power3.out',
+          width: '100%',
+          ease: 'none',
           scrollTrigger: {
-            trigger: step,
-            start: 'top 80%',
-            onEnter: () => {
-              step.classList.add('active');
+            trigger: section,
+            start: 'top 70%',
+            end: 'bottom 60%',
+            scrub: 0.3,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              steps.forEach((step, idx) => {
+                const stepThreshold = idx / (steps.length - 1);
+                if (progress >= stepThreshold - 0.05) {
+                  step.classList.add('active');
+                } else {
+                  step.classList.remove('active');
+                }
+              });
             }
           }
         }
       );
-    });
+    }
   },
 
   initWhy: function() {
