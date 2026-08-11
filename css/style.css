@@ -1969,8 +1969,8 @@ button, a {
   width: 0%;
   height: 100%;
   background: var(--accent-cyan);
-  box-shadow: 0 0 10px var(--accent-cyan);
-  transition: none;
+  box-shadow: 0 0 14px var(--accent-cyan);
+  transition: width 0.08s ease-out;
 }
 
 .timeline-step {

@@ -161,37 +161,40 @@ window.SectionAnimations = {
 
   initHowItWorks: function() {
     const section = document.querySelector('#how-it-works');
-    if (!section) return;
-
     const timelineLine = document.querySelector('#timeline-line');
+    if (!section || !timelineLine) return;
+
     const steps = section.querySelectorAll('.timeline-step');
-    
-    if (timelineLine) {
-      gsap.fromTo(timelineLine, 
-        { width: '0%' },
-        {
-          width: '100%',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 70%',
-            end: 'bottom 60%',
-            scrub: 0.3,
-            onUpdate: (self) => {
-              const progress = self.progress;
-              steps.forEach((step, idx) => {
-                const stepThreshold = idx / (steps.length - 1);
-                if (progress >= stepThreshold - 0.05) {
-                  step.classList.add('active');
-                } else {
-                  step.classList.remove('active');
-                }
-              });
-            }
-          }
+
+    function updateTimelineLine() {
+      const rect = section.getBoundingClientRect();
+      const winH = window.innerHeight;
+
+      // Start drawing when top of section enters 85% down screen
+      // Finish drawing when section moves up past 25% from top
+      const startPoint = winH * 0.85;
+      const totalDist = rect.height + winH * 0.6;
+      const scrolled = startPoint - rect.top;
+
+      let progress = scrolled / totalDist;
+      progress = Math.max(0, Math.min(1, progress));
+
+      timelineLine.style.width = (progress * 100) + '%';
+
+      // Highlight step cards as line reaches them
+      steps.forEach((step, idx) => {
+        const threshold = idx / (steps.length - 1);
+        if (progress >= threshold - 0.08) {
+          step.classList.add('active');
+        } else {
+          step.classList.remove('active');
         }
-      );
+      });
     }
+
+    window.addEventListener('scroll', updateTimelineLine, { passive: true });
+    window.addEventListener('resize', updateTimelineLine, { passive: true });
+    updateTimelineLine();
   },
 
   initWhy: function() {
