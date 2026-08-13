@@ -207,17 +207,36 @@ const App = {
         }
       });
     }, 100));
+    // Strip hash from address bar on page load if present
+    if (window.location.hash) {
+      setTimeout(() => {
+        const targetElement = document.querySelector(window.location.hash);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, null, window.location.pathname);
+        }
+      }, 150);
+    }
     
-    // Smooth scrolling for all anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // Smooth scrolling for all anchor links while keeping address bar 100% clean
+    document.querySelectorAll('a[href*="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
-        const targetId = this.getAttribute('href');
-        if (targetId === '#') return;
+        const href = this.getAttribute('href');
+        if (!href) return;
+        const hashIndex = href.indexOf('#');
+        if (hashIndex === -1) return;
+        const targetId = href.substring(hashIndex);
+        if (targetId === '#' || targetId === '') return;
         
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           e.preventDefault();
           targetElement.scrollIntoView({ behavior: 'smooth' });
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.pathname);
+          }
           
           // Close mobile menu if open
           const mobileMenu = document.getElementById('mobile-menu');
