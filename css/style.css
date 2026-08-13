@@ -2644,3 +2644,97 @@ button, a {
   .hero-tech-indicators { flex-direction: column; gap: 0.75rem; }
 }
 
+/* ==================== COMPREHENSIVE MOBILE DEVICE OPTIMIZATION ==================== */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  
+  .container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  
+  /* Touch-friendly Navigation */
+  .navbar {
+    height: 64px;
+    padding: 0 1.25rem;
+  }
+  
+  .mobile-menu {
+    top: 64px;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .mobile-link {
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Dynamic scale headings */
+  .heading-xl {
+    font-size: clamp(2rem, 7.5vw, 3rem) !important;
+    letter-spacing: -0.01em;
+  }
+
+  .heading-lg {
+    font-size: clamp(1.5rem, 5.5vw, 2.2rem) !important;
+  }
+
+  /* Full-width touch buttons on mobile */
+  .hero-ctas, .final-cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.85rem;
+  }
+
+  .hero-ctas .btn-primary,
+  .hero-ctas .btn-secondary,
+  .final-cta-buttons .btn-primary,
+  .final-cta-buttons .btn-secondary,
+  .btn-large {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Cards & Visualizers */
+  .glass-card, .project-card, .feature-card {
+    padding: 1.25rem;
+  }
+
+  .editor-canvas, .explorer-canvas, .transform-card-canvas {
+    min-height: 280px;
+    max-height: 380px;
+  }
+
+  .why-transform-container {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-padding { padding: 3rem 0; }
+  .heading-xl { font-size: 1.95rem !important; }
+  .heading-lg { font-size: 1.45rem !important; }
+
+  .hero-content { padding-top: 5.5rem; }
+  .features-grid, .projects-grid, .tech-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
