@@ -227,10 +227,12 @@ Thank you!`;
     if (!rawConfig) return;
     try {
       const cfg = JSON.parse(rawConfig);
-      if (cfg.phone) {
+      const formattedMsg = `Hi BuildCares,\nI would like to enquire about a project.\n\nName: \nEmail: \nPhone: \nService: Extension\nSubject: Project Enquiry\nMessage: `;
+      if (cfg.phone || cfg.whatsapp) {
+        const num = cfg.whatsapp || '447586750755';
         document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
-          a.href = `https://wa.me/${cfg.whatsapp || '447586750755'}`;
-          if (a.textContent.includes('📱')) a.textContent = `📱 ${cfg.phone}`;
+          a.href = `https://wa.me/${num}?text=${encodeURIComponent(formattedMsg)}`;
+          if (a.textContent.includes('📱')) a.textContent = `📱 ${cfg.phone || num}`;
         });
       }
       if (cfg.email) {
