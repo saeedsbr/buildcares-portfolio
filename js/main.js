@@ -105,6 +105,35 @@ const App = {
 
       // 13. Interactive Project Enquiry Form (WhatsApp & Gmail format compiler)
       this.initProjectEnquiryForm();
+
+      // 14. Global WhatsApp link format binder
+      this.initWhatsAppLinks();
+    });
+  },
+
+  initWhatsAppLinks: function() {
+    const defaultWAMessage = `Hi BuildCares,\nI would like to enquire about a project.\nName: \nEmail: \nPhone: \nService: Extension\nSubject: Project Enquiry\nMessage: `;
+
+    document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
+      if (link.id === 'btn-send-whatsapp') return;
+
+      link.addEventListener('click', (e) => {
+        const name = document.getElementById('eq-name')?.value.trim() || '';
+        const email = document.getElementById('eq-email')?.value.trim() || '';
+        const phone = document.getElementById('eq-phone')?.value.trim() || '';
+        const service = document.getElementById('eq-service')?.value || 'Extension';
+        const subject = document.getElementById('eq-subject')?.value.trim() || '';
+        const message = document.getElementById('eq-message')?.value.trim() || '';
+
+        let msg = defaultWAMessage;
+        if (name || email || phone || subject || message) {
+          msg = `Hi BuildCares,\nI would like to enquire about a project.\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nSubject: ${subject}\nMessage:\n${message}`;
+        }
+
+        e.preventDefault();
+        const waUrl = `https://wa.me/447586750755?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+      });
     });
   },
 
