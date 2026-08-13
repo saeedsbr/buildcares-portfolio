@@ -1,0 +1,13 @@
+{
+  "name": "buildcares-portfolio",
+  "version": "1.0.0",
+  "description": "BuildCares Architectural CAD Platform",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "build": "echo 'Static build complete'"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}
