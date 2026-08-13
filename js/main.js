@@ -99,9 +99,82 @@ const App = {
     
       // 11. Dynamic site config sync from admin
       this.syncAdminConfig();
+
+      // 12. Direct Gmail compose & formatted enquiry template
+      this.initEmailComposer();
     });
   },
-  
+
+  initEmailComposer: function() {
+    const defaultEmail = 'anwar@buildcares.com';
+    const subject = 'Architectural CAD Design Enquiry — BuildCares';
+    const bodyTemplate = `Hi BuildCares Team,
+
+I would like to request an architectural CAD design consultation & quote for my project.
+
+=====================================
+📋 MY PROJECT DETAILS
+=====================================
+
+1. PROJECT TYPE (Please specify):
+   [ ] Loft Conversion
+   [ ] House Extension (Single / Double Storey)
+   [ ] New Build House Design
+   [ ] Garage Conversion
+   [ ] Outbuilding / Garden Room
+   [ ] Internal Floor Plan Alterations
+   [ ] 3D Rendering & Visualisation
+   [ ] Other: 
+
+2. PROPERTY TYPE:
+   (e.g., Detached, Semi-Detached, Terraced, Bungalow, Flat)
+
+3. LOCATION (City or Postcode):
+   
+
+4. DRAWINGS REQUIRED:
+   [ ] Planning Permission Drawings
+   [ ] Building Regulations / Control Drawings
+   [ ] 3D Photorealistic Models & Visualisation
+   [ ] Measured Survey / CAD Digitisation
+
+5. ESTIMATED TIMELINE / NOTES:
+   
+
+=====================================
+👤 CONTACT INFORMATION
+=====================================
+Full Name: 
+Phone Number: 
+
+Thank you!`;
+
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(bodyTemplate);
+
+    document.querySelectorAll('a[href*="mailto:"], #final-cta-email').forEach(link => {
+      let currentHref = link.getAttribute('href') || '';
+      let targetEmail = defaultEmail;
+      if (currentHref.includes('mailto:')) {
+        targetEmail = currentHref.replace('mailto:', '').split('?')[0] || defaultEmail;
+      }
+
+      const mailtoUrl = `mailto:${targetEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodedSubject}&body=${encodedBody}`;
+
+      link.setAttribute('href', mailtoUrl);
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Open Gmail Web Compose in new tab
+        const win = window.open(gmailUrl, '_blank');
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+          window.location.href = mailtoUrl;
+        }
+      });
+    });
+  },
+
   syncAdminConfig: function() {
     const rawConfig = localStorage.getItem('buildcares_config');
     if (!rawConfig) return;
