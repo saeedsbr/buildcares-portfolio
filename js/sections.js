@@ -110,10 +110,10 @@ window.SectionAnimations = {
     });
 
     // 3D Building Extrusion scroll animation
-    gsap.fromTo('#isometric-building',
-      { '--building-h': '0px' },
+    gsap.fromTo('#transform-3d-canvas img, #transform-3d-canvas svg',
+      { scale: 0.85, opacity: 0.4 },
       {
-        '--building-h': '130px',
+        scale: 1.0, opacity: 1,
         ease: 'none',
         scrollTrigger: {
           trigger: section,
@@ -265,59 +265,23 @@ window.SectionAnimations = {
 
   initTransformInteractive: function() {
     const container = document.getElementById('transform-3d-canvas') || document.getElementById('transform-3d');
-    const building = document.getElementById('isometric-building');
-    if (!container || !building) return;
+    if (!container) return;
 
-    let rotX = 55;
-    let rotZ = 0;
     let scale = 1.0;
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
 
     function applyTransform() {
-      building.style.animation = 'none'; // Disable CSS auto-spin keyframes on user interaction
-      building.style.transform = `scale(${scale}) rotateX(${rotX}deg) rotateZ(${rotZ}deg)`;
+      const targetEl = container.querySelector('#render-3d-img') || container.querySelector('img') || container.querySelector('svg') || container;
+      targetEl.style.transform = `scale(${scale})`;
+      targetEl.style.transformOrigin = 'center center';
+      targetEl.style.transition = 'transform 0.2s ease-out';
       const scaleText = document.getElementById('iso-scale-text');
       if (scaleText) scaleText.textContent = Math.round(scale * 100) + '%';
     }
 
     function resetView() {
-      rotX = 55;
-      rotZ = 0;
       scale = 1.0;
       applyTransform();
     }
-
-    // Pointer Drag Rotation (360 degrees UP, DOWN, LEFT, RIGHT)
-    container.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('button')) return;
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      container.style.cursor = 'grabbing';
-    });
-
-    window.addEventListener('pointermove', (e) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - startX;
-      const deltaY = e.clientY - startY;
-
-      rotZ += deltaX * 0.6; // 360 degree horizontal rotation
-      rotX -= deltaY * 0.4; // 360 degree vertical tilt rotation
-
-      applyTransform();
-
-      startX = e.clientX;
-      startY = e.clientY;
-    });
-
-    window.addEventListener('pointerup', () => {
-      if (isDragging) {
-        isDragging = false;
-        container.style.cursor = 'grab';
-      }
-    });
 
     // Mouse Wheel Zoom In / Zoom Out
     container.addEventListener('wheel', (e) => {
@@ -337,7 +301,60 @@ window.SectionAnimations = {
       applyTransform();
     });
 
+    // Interactive 3D Cursor Tilt & Rotation Tracking
+    container.addEventListener('mousemove', (e) => {
+      const wrapper = container.querySelector('#render-3d-wrapper');
+      if (!wrapper) return;
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      const rotY = (x / (rect.width / 2)) * 14;
+      const rotX = -(y / (rect.height / 2)) * 12;
+      wrapper.style.animation = 'none';
+      wrapper.style.transform = `perspective(1000px) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+    });
+
+    let isRotating = false;
+
+    container.addEventListener('mouseleave', () => {
+      const wrapper = container.querySelector('#render-3d-wrapper');
+      if (wrapper && isRotating) {
+        wrapper.style.transform = '';
+        wrapper.classList.add('render-3d-rotating');
+      } else if (wrapper) {
+        wrapper.style.transform = 'none';
+      }
+    });
+
     // Toolbar Buttons
+    document.getElementById('iso-rotate-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wrapper = container.querySelector('#render-3d-wrapper');
+      const btn = document.getElementById('iso-rotate-btn');
+      isRotating = !isRotating;
+      if (isRotating) {
+        if (wrapper) wrapper.classList.add('render-3d-rotating');
+        if (btn) {
+          btn.textContent = '🔄 Rotating ON';
+          btn.style.background = 'rgba(0,229,255,0.25)';
+          btn.style.borderColor = 'var(--accent-cyan)';
+          btn.style.color = '#fff';
+        }
+      } else {
+        if (wrapper) {
+          wrapper.classList.remove('render-3d-rotating');
+          wrapper.style.animation = 'none';
+          wrapper.style.transform = 'none';
+        }
+        if (btn) {
+          btn.textContent = '⏸ Rotation OFF';
+          btn.style.background = 'rgba(255,255,255,0.1)';
+          btn.style.borderColor = 'var(--line-color)';
+          btn.style.color = '#aaa';
+        }
+      }
+    });
+
     document.getElementById('iso-zoom-in')?.addEventListener('click', (e) => {
       e.stopPropagation();
       scale = Math.min(scale + 0.25, 2.5);

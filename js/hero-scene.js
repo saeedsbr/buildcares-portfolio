@@ -73,9 +73,6 @@
             this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             this.container.appendChild(this.renderer.domElement);
 
-            // Set grab cursor
-            this.container.style.cursor = 'grab';
-
             // Lighting
             const ambientLight = new THREE.AmbientLight(0x4488cc, 0.3);
             this.scene.add(ambientLight);
@@ -99,23 +96,6 @@
             // Event Listeners
             window.addEventListener('resize', this.handleResize);
             document.addEventListener('mousemove', this.handleMouseMove);
-
-            // Pointer Drag & Zoom Listeners
-            const heroSec = document.getElementById('hero-section') || this.container;
-            if (heroSec) {
-                heroSec.style.cursor = 'grab';
-                heroSec.addEventListener('pointerdown', this.handlePointerDown);
-                heroSec.addEventListener('wheel', this.handleWheel, { passive: false });
-                heroSec.addEventListener('dblclick', this.handleDblClick);
-            }
-            this.container.addEventListener('pointerdown', this.handlePointerDown);
-            this.container.addEventListener('wheel', this.handleWheel, { passive: false });
-            this.container.addEventListener('dblclick', this.handleDblClick);
-
-            window.addEventListener('pointermove', this.handlePointerMove);
-            window.addEventListener('pointerup', this.handlePointerUp);
-
-
 
             // Start Render Loop
             this.render();
@@ -603,38 +583,9 @@
             this.targetY = (this.mouseY / this.windowHalfY) * 1.5;
         }
 
-        handlePointerDown(event) {
-            // Ignore clicks on buttons/links
-            if (event.target.closest('a, button, input')) return;
-            this.isDragging = true;
-            this.previousPointerX = event.clientX;
-            this.previousPointerY = event.clientY;
-            document.body.style.cursor = 'grabbing';
-            if (this.container) this.container.style.cursor = 'grabbing';
-        }
-
-        handlePointerMove(event) {
-            if (!this.isDragging || !this.buildingGroup) return;
-
-            const deltaX = event.clientX - this.previousPointerX;
-            const deltaY = event.clientY - this.previousPointerY;
-
-            // Full 360 degree Y (horizontal yaw) and X (vertical pitch) rotation
-            this.rotationVelocityY = deltaX * 0.01;
-            this.rotationVelocityX = deltaY * 0.01;
-
-            this.buildingGroup.rotation.y += this.rotationVelocityY;
-            this.buildingGroup.rotation.x += this.rotationVelocityX;
-
-            this.previousPointerX = event.clientX;
-            this.previousPointerY = event.clientY;
-        }
-
-        handlePointerUp() {
-            this.isDragging = false;
-            document.body.style.cursor = '';
-            if (this.container) this.container.style.cursor = 'grab';
-        }
+        handlePointerDown(event) {}
+        handlePointerMove(event) {}
+        handlePointerUp() {}
 
         handleWheel(event) {
             event.preventDefault();
@@ -680,20 +631,9 @@
             
             const time = this.clock.getElapsedTime();
 
-            // Unconstrained 360 Degree Rotation & Inertia Damping Logic
+            // Gentle ambient auto-spin around Y axis
             if (this.buildingGroup) {
-                if (this.isDragging) {
-                    // Direct 360 user drag active
-                } else if (Math.abs(this.rotationVelocityY) > 0.0001 || Math.abs(this.rotationVelocityX) > 0.0001) {
-                    // Smooth spin momentum damping in all directions (UP/DOWN/LEFT/RIGHT)
-                    this.buildingGroup.rotation.y += this.rotationVelocityY;
-                    this.buildingGroup.rotation.x += this.rotationVelocityX;
-                    this.rotationVelocityY *= 0.95;
-                    this.rotationVelocityX *= 0.95;
-                } else {
-                    // Gentle auto-spin around Y axis
-                    this.buildingGroup.rotation.y += 0.002;
-                }
+                this.buildingGroup.rotation.y += 0.002;
             }
 
             

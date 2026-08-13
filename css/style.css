@@ -1061,10 +1061,33 @@ button, a {
    Main block: 280px wide × 220px deep    Garage: 100px wide × 160px deep
    ────────────────────────────────────────────────────────────────────── */
 
-/* 360° spin animation */
+/* 360° spin & 3D float-rotate animations */
 @keyframes iso-spin {
   from { transform: rotateX(55deg) rotateZ(0deg); }
   to   { transform: rotateX(55deg) rotateZ(360deg); }
+}
+
+@keyframes iso-3d-rotate-continuous {
+  0% {
+    transform: perspective(1100px) rotateY(-28deg) rotateX(10deg) rotateZ(-2deg) scale(1);
+  }
+  25% {
+    transform: perspective(1100px) rotateY(0deg) rotateX(-6deg) rotateZ(2deg) scale(1.03);
+  }
+  50% {
+    transform: perspective(1100px) rotateY(28deg) rotateX(8deg) rotateZ(-2deg) scale(1);
+  }
+  75% {
+    transform: perspective(1100px) rotateY(0deg) rotateX(-7deg) rotateZ(3deg) scale(1.03);
+  }
+  100% {
+    transform: perspective(1100px) rotateY(-28deg) rotateX(10deg) rotateZ(-2deg) scale(1);
+  }
+}
+
+.render-3d-rotating {
+  /* animation disabled */
+  transform: none !important;
 }
 
 .isometric-building {
@@ -2509,10 +2532,6 @@ button, a {
     padding: 0 8px;
     justify-content: flex-start;
     gap: 2px;
-  }
-  .toolbar-section { flex-direction: row; }
-  .toolbar-divider { width: 1px; height: 70%; margin: auto 6px; }
-}
 
 @media (max-width: 480px) {
   .section-padding { padding: 3rem 0; }

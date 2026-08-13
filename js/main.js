@@ -76,10 +76,11 @@ const App = {
         window.HeroScene.init('hero-canvas');
       }
       
-      // 7. Floor Plans
+      // 7. Floor Plans & 3D Cutaway Model
       if (window.FloorPlan) {
         window.FloorPlan.createEditorPlan('#editor-floor-plan');
         window.FloorPlan.createTransformPlan('#transform-floor-plan');
+        window.FloorPlan.createTransform3DModel('#transform-3d-canvas');
       }
       
       // 8. GSAP Section Animations
