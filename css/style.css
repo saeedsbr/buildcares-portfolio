@@ -2532,6 +2532,96 @@ button, a {
     padding: 0 8px;
     justify-content: flex-start;
     gap: 2px;
+  }
+
+/* ==================== ARCHITECTURAL ENQUIRY FORM ==================== */
+.enquiry-form-card {
+  background: rgba(11, 17, 30, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 229, 255, 0.05);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 680px;
+  margin: 2.5rem auto 0;
+  text-align: left;
+  backdrop-filter: blur(12px);
+}
+
+.enquiry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .enquiry-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.enquiry-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.enquiry-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.enquiry-input,
+.enquiry-select,
+.enquiry-textarea {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.enquiry-input:focus,
+.enquiry-select:focus,
+.enquiry-textarea:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.enquiry-select option {
+  background: #0b111e;
+  color: #ffffff;
+}
+
+.enquiry-textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.enquiry-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .enquiry-actions {
+    flex-direction: column;
+  }
+  .enquiry-actions .btn-primary,
+  .enquiry-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
 
 @media (max-width: 480px) {
   .section-padding { padding: 3rem 0; }

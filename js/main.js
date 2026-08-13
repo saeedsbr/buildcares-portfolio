@@ -102,7 +102,53 @@ const App = {
 
       // 12. Direct Gmail compose & formatted enquiry template
       this.initEmailComposer();
+
+      // 13. Interactive Project Enquiry Form (WhatsApp & Gmail format compiler)
+      this.initProjectEnquiryForm();
     });
+  },
+
+  initProjectEnquiryForm: function() {
+    const btnWhatsApp = document.getElementById('btn-send-whatsapp');
+    const btnGmail = document.getElementById('btn-send-gmail');
+    if (!btnWhatsApp && !btnGmail) return;
+
+    function getFormValues() {
+      const name = document.getElementById('eq-name')?.value.trim() || '';
+      const email = document.getElementById('eq-email')?.value.trim() || '';
+      const phone = document.getElementById('eq-phone')?.value.trim() || '';
+      const service = document.getElementById('eq-service')?.value || 'Extension';
+      const subject = document.getElementById('eq-subject')?.value.trim() || '';
+      const message = document.getElementById('eq-message')?.value.trim() || '';
+
+      return { name, email, phone, service, subject, message };
+    }
+
+    if (btnWhatsApp) {
+      btnWhatsApp.addEventListener('click', () => {
+        const data = getFormValues();
+        const waMessage = `Hi BuildCares,\nI would like to enquire about a project.\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nService: ${data.service}\nSubject: ${data.subject}\nMessage:\n${data.message}`;
+
+        const waUrl = `https://wa.me/447586750755?text=${encodeURIComponent(waMessage)}`;
+        window.open(waUrl, '_blank');
+      });
+    }
+
+    if (btnGmail) {
+      btnGmail.addEventListener('click', () => {
+        const data = getFormValues();
+        const mailSubject = data.subject ? `BuildCares Enquiry: ${data.subject}` : 'Architectural Project Enquiry — BuildCares';
+        const mailBody = `Hi BuildCares,\nI would like to enquire about a project.\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nService: ${data.service}\nSubject: ${data.subject}\nMessage:\n${data.message}`;
+
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=anwar@buildcares.com&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+        const mailtoUrl = `mailto:anwar@buildcares.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+
+        const win = window.open(gmailUrl, '_blank');
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+          window.location.href = mailtoUrl;
+        }
+      });
+    }
   },
 
   initEmailComposer: function() {
