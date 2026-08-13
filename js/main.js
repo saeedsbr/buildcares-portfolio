@@ -103,81 +103,53 @@ const App = {
       // 12. Direct Gmail compose & formatted enquiry template
       this.initEmailComposer();
 
-      // 13. Interactive Project Enquiry Form (WhatsApp & Gmail format compiler)
-      this.initProjectEnquiryForm();
-
-      // 14. Global WhatsApp link format binder
+      // 13. Global WhatsApp link format binder
       this.initWhatsAppLinks();
     });
   },
 
   initWhatsAppLinks: function() {
-    const defaultWAMessage = `Hi BuildCares,\nI would like to enquire about a project.\nName: \nEmail: \nPhone: \nService: Extension\nSubject: Project Enquiry\nMessage: `;
+    const formattedWAMessage = `Hi BuildCares,\nI would like to enquire about a project.\nName: \nEmail: \nPhone: \nService: Extension\nSubject: Project Enquiry\nMessage: `;
 
     document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
-      if (link.id === 'btn-send-whatsapp') return;
+      const waUrl = `https://wa.me/447586750755?text=${encodeURIComponent(formattedWAMessage)}`;
+      link.setAttribute('href', waUrl);
 
       link.addEventListener('click', (e) => {
-        const name = document.getElementById('eq-name')?.value.trim() || '';
-        const email = document.getElementById('eq-email')?.value.trim() || '';
-        const phone = document.getElementById('eq-phone')?.value.trim() || '';
-        const service = document.getElementById('eq-service')?.value || 'Extension';
-        const subject = document.getElementById('eq-subject')?.value.trim() || '';
-        const message = document.getElementById('eq-message')?.value.trim() || '';
-
-        let msg = defaultWAMessage;
-        if (name || email || phone || subject || message) {
-          msg = `Hi BuildCares,\nI would like to enquire about a project.\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nSubject: ${subject}\nMessage:\n${message}`;
-        }
-
         e.preventDefault();
-        const waUrl = `https://wa.me/447586750755?text=${encodeURIComponent(msg)}`;
         window.open(waUrl, '_blank');
       });
     });
   },
 
-  initProjectEnquiryForm: function() {
-    const btnWhatsApp = document.getElementById('btn-send-whatsapp');
-    const btnGmail = document.getElementById('btn-send-gmail');
-    if (!btnWhatsApp && !btnGmail) return;
+  initEmailComposer: function() {
+    const defaultEmail = 'anwar@buildcares.com';
+    const subject = 'Architectural CAD Design Enquiry — BuildCares';
+    const formattedEmailMessage = `Hi BuildCares,\nI would like to enquire about a project.\nName: \nEmail: \nPhone: \nService: Extension\nSubject: Project Enquiry\nMessage: `;
 
-    function getFormValues() {
-      const name = document.getElementById('eq-name')?.value.trim() || '';
-      const email = document.getElementById('eq-email')?.value.trim() || '';
-      const phone = document.getElementById('eq-phone')?.value.trim() || '';
-      const service = document.getElementById('eq-service')?.value || 'Extension';
-      const subject = document.getElementById('eq-subject')?.value.trim() || '';
-      const message = document.getElementById('eq-message')?.value.trim() || '';
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(formattedEmailMessage);
 
-      return { name, email, phone, service, subject, message };
-    }
+    document.querySelectorAll('a[href*="mailto:"], #final-cta-email').forEach(link => {
+      let currentHref = link.getAttribute('href') || '';
+      let targetEmail = defaultEmail;
+      if (currentHref.includes('mailto:')) {
+        targetEmail = currentHref.replace('mailto:', '').split('?')[0] || defaultEmail;
+      }
 
-    if (btnWhatsApp) {
-      btnWhatsApp.addEventListener('click', () => {
-        const data = getFormValues();
-        const waMessage = `Hi BuildCares,\nI would like to enquire about a project.\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nService: ${data.service}\nSubject: ${data.subject}\nMessage:\n${data.message}`;
+      const mailtoUrl = `mailto:${targetEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodedSubject}&body=${encodedBody}`;
 
-        const waUrl = `https://wa.me/447586750755?text=${encodeURIComponent(waMessage)}`;
-        window.open(waUrl, '_blank');
-      });
-    }
+      link.setAttribute('href', mailtoUrl);
 
-    if (btnGmail) {
-      btnGmail.addEventListener('click', () => {
-        const data = getFormValues();
-        const mailSubject = data.subject ? `BuildCares Enquiry: ${data.subject}` : 'Architectural Project Enquiry — BuildCares';
-        const mailBody = `Hi BuildCares,\nI would like to enquire about a project.\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nService: ${data.service}\nSubject: ${data.subject}\nMessage:\n${data.message}`;
-
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=anwar@buildcares.com&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-        const mailtoUrl = `mailto:anwar@buildcares.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
         const win = window.open(gmailUrl, '_blank');
         if (!win || win.closed || typeof win.closed === 'undefined') {
           window.location.href = mailtoUrl;
         }
       });
-    }
+    });
   },
 
   initEmailComposer: function() {
